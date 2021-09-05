@@ -599,13 +599,19 @@ public class Sqlite {
 			ResultSet rs = statement.executeQuery(sql);
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int rscnt = rsmd.getColumnCount();
+			
 			while (rs.next()) {
 				//1件分のデータ(連想配列)
 				ArrayList<String> hdata = new ArrayList<String>();
-				for (int i = 1; i <= rscnt; i++) {
-					//フィールド名
-					String field = rsmd.getColumnName(i);
-					hdata.add(field);
+				if(list.size() == 0) {
+					for (int i = 1; i <= rscnt; i++) {
+						//フィールド名
+						String field = rsmd.getColumnName(i);
+						hdata.add(field);
+					}
+					//1件分のデータを格納
+					list.add(hdata);
+					hdata = new ArrayList<String>();
 				}
 
 				for (int i = 1; i <= rscnt; i++) {
