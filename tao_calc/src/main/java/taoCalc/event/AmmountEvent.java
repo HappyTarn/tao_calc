@@ -33,13 +33,13 @@ public class AmmountEvent extends MessageEvent {
 
 	public void onMessageReceived(MessageReceivedEvent event) {
 
-//		if (!event.getAuthor().getId().equals(TAO_ID)) {
-//			return;
-//		}
-//
-//		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
-//			return;
-//		}
+		if (!event.getAuthor().getId().equals(TAO_ID)) {
+			return;
+		}
+
+		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
+			return;
+		}
 		
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
