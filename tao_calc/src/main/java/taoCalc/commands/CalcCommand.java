@@ -17,7 +17,7 @@ public class CalcCommand extends Command {
 	public CalcCommand() {
 		this.name = "calc";
 		this.help = "貫通の計算、攻撃力を計算";
-		this.arguments = "貫通、攻撃";
+		this.arguments = "[貫通,攻撃]";
 		this.guildOnly = false;
 		this.aliases = new String[] { "calc" };
 	}

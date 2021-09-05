@@ -18,7 +18,7 @@ public class ChangeExpCommand extends Command {
 
 	public ChangeExpCommand() {
 		this.name = "changeExp";
-		this.help = "経験値を変更（「経験値変更係」ロールが付与サれている人のみ）";
+		this.help = "経験値を変更【要[経験値変更係]ロール】";
 		this.arguments = "@mention exp";
 		this.guildOnly = true;
 		this.ownerCommand = false;

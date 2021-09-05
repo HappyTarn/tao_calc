@@ -12,7 +12,7 @@ public class ShowPetCommand extends Command {
 	public ShowPetCommand() {
 		this.name = "showPet";
 		this.help = "ペットの集計結果を見る";
-		this.arguments = "tao";
+		this.arguments = "[none,tao]";
 		this.guildOnly = true;
 		this.ownerCommand = false;
 		this.aliases = new String[] { "showpet", "Showpet", "ShowPet","sp" };

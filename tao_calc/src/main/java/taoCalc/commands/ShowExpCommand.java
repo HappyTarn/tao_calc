@@ -16,7 +16,7 @@ public class ShowExpCommand extends Command {
 	public ShowExpCommand() {
 		this.name = "showExp";
 		this.help = "現在の保有経験値を表示";
-		this.arguments = "all or @mention";
+		this.arguments = "[all,sall,@mention]";
 		this.guildOnly = true;
 		this.ownerCommand = false;
 		this.aliases = new String[] { "showexp", "Showexp", "ShowExp", "se" };

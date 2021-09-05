@@ -45,7 +45,6 @@ import taoCalc.commands.ShowPetCommand;
 import taoCalc.commands.ShowRateCommand;
 import taoCalc.commands.ShutdownCommand;
 import taoCalc.commands.StartCommand;
-import taoCalc.commands.StatusCommand;
 import taoCalc.commands.StopCommand;
 import taoCalc.commands.TestCommand;
 import taoCalc.commands.initCommand;
@@ -117,7 +116,6 @@ public class TaoCalc {
 				new StopCommand(),
 				new ShowPetCommand(),
 				new PlayCommand(),
-				new StatusCommand(),
 				new CalcCommand(),
 				new MtCommand(),
 				new MtoCommand(),

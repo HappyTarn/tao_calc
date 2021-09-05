@@ -166,9 +166,9 @@ public class CommandClientImpl implements CommandClient, EventListener
                             category = command.getCategory();
                             builder.append("\n\n  __").append(category==null ? "No Category" : category.getName()).append("__:\n");
                         }
-                        builder.append("\n`").append(textPrefix).append(prefix==null?" ":"").append(command.getName())
+                        builder.append("`").append(textPrefix).append(prefix==null?" ":"").append(command.getName())
                                .append(command.getArguments()==null ? "`" : " "+command.getArguments()+"`")
-                               .append(" - ").append(command.getHelp() + "\n");
+                               .append("\n> ").append(command.getHelp() + "\n");
                     }
                 }
                 User owner = event.getJDA().getUserById(ownerId);

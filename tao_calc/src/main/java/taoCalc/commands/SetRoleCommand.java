@@ -14,8 +14,8 @@ public class SetRoleCommand extends Command {
 
 	public SetRoleCommand() {
 		this.name = "setRole";
-		this.help = "デフォルトの経験値管理係と経験値変更係を別のロールにする";
-		this.arguments = "経験値管理係 @role  or  経験値変更係 @role or 発言不可 @role";
+		this.help = "ロールの設定";
+		this.arguments = "[経験値管理係 @role,経験値変更係 @role,発言不可 @role,超激レア報告OK @role,他鯖超激レア報告OK @role]";
 		this.guildOnly = true;
 		this.ownerCommand = false;
         this.userPermissions = new Permission[] {Permission.ADMINISTRATOR};

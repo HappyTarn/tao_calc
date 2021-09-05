@@ -17,8 +17,8 @@ public class AddExpCommand extends Command {
 
 	public AddExpCommand() {
 		this.name = "addExp";
-		this.help = "経験値を追加（「経験値変更係」ロールが付与サれている人のみ）";
-		this.arguments = "@mention exp";
+		this.help = "経験値を追加【要[経験値変更係]ロール】";
+		this.arguments = "[@mention exp]";
 		this.guildOnly = true;
 		this.ownerCommand = false;
 		this.aliases = new String[] { "addexp", "Addexp", "AddExp","ae" };

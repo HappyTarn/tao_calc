@@ -18,8 +18,8 @@ public class ChangeRateCommand extends Command {
 
 	public ChangeRateCommand() {
 		this.name = "changeRate";
-		this.help = "レートを変更（「経験値管理係」ロールが付与サれている人のみ）";
-		this.arguments = "レア=5 激レア=30 超激レア=100 ...";
+		this.help = "レートを変更【要[経験値管理係]ロール】";
+		this.arguments = "[レア=5 激レア=30 超激レア=100]";
 		this.guildOnly = true;
 	}
 

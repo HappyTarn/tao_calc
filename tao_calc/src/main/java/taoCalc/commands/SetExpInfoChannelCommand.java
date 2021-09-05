@@ -14,8 +14,8 @@ public class SetExpInfoChannelCommand extends Command {
 
 	public SetExpInfoChannelCommand() {
 		this.name = "setExpInfoChannel";
-		this.help = "垂れ流しチャンネルを設定";
-		this.arguments = "#channel";
+		this.help = "保有経験値情報の垂れ流しチャンネルを設定";
+		this.arguments = "[#channel]";
 		this.guildOnly = true;
 		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.aliases = new String[] { "seic" };

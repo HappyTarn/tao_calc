@@ -14,8 +14,8 @@ public class SetPrizeInfoChannelCommand extends Command {
 
 	public SetPrizeInfoChannelCommand() {
 		this.name = "setPrizeInfoChannel";
-		this.help = "垂れ流しチャンネルを設定";
-		this.arguments = "#channel";
+		this.help = "懸賞金情報の垂れ流しチャンネルを設定";
+		this.arguments = "[#channel]";
 		this.guildOnly = true;
 		this.userPermissions = new Permission[] { Permission.ADMINISTRATOR };
 		this.aliases = new String[] { "spic" };
