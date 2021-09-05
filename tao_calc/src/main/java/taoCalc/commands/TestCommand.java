@@ -33,7 +33,7 @@ public class TestCommand extends Command {
 
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setTitle("属性:[1周年] ランク:【ありがとう！】\r\n"
-					+ "............が待ち構えている...！\r\n"
+					+ "【テスト】............が待ち構えている...！\r\n"
 					+ "Lv.10,150  HP: 101,550 素早さ: 400");
 			eb.setImage(
 					"https://media.discordapp.net/attachments/623052991838289930/661411050461331466/image0.jpg?width=372&height=662");

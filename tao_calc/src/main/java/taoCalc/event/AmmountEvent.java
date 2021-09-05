@@ -33,13 +33,13 @@ public class AmmountEvent extends MessageEvent {
 
 	public void onMessageReceived(MessageReceivedEvent event) {
 
-		if (!event.getAuthor().getId().equals(TAO_ID)) {
-			return;
-		}
-
-		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
-			return;
-		}
+//		if (!event.getAuthor().getId().equals(TAO_ID)) {
+//			return;
+//		}
+//
+//		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
+//			return;
+//		}
 		
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
@@ -134,14 +134,31 @@ public class AmmountEvent extends MessageEvent {
 		
 		// モンスター名処理
 		Pattern mp = Pattern.compile("属性.* ランク:【(.+)】(.*)が待ち構えている");
+		Pattern mp2 = Pattern.compile("【(.+)");
 		String monsterName = "";
 		try {
 			Matcher mm = mp.matcher(
 					event.getMessage().getEmbeds().get(0).getTitle().replaceAll("\\r", "").replaceAll("\\n", ""));
 			if(mm.find()) {
-				monsterName = mm.group(2);
+				Matcher mm2 = mp2.matcher(mm.group(1));
+				if(mm2.find()) {
+					monsterName = "【" + mm2.group(1) + "】";
+				}
+				monsterName = monsterName + mm.group(2);
+				event.getMessage().reply(monsterName).queue();
 				if(Const.tohru_list.contains(monsterName)) {
 					rank = Const.tohru;
+					String roleId = Sqlite.getRole(guildId, Const.発言不可);
+					Role role = event.getGuild().getRoleById(roleId);
+					if (role != null) {
+						event.getGuild().addRoleToMember(memberId, role).queue();
+						EmbedBuilder eb = new EmbedBuilder();
+						eb.setTitle("リアクション押下で発言不可解除です！");
+						eb.setDescription("「tc:mt <メッセージ>」で通知を出せるよ！");
+						eb.setFooter("↓押してね！");
+						Message ms = event.getMessage().reply(eb.build()).complete();
+						ms.addReaction("U+1F91E").queue();
+					}
 				}
 			}
 		} catch (Exception e) {
