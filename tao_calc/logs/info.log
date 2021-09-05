@@ -1,0 +1,6 @@
+time:2021-9-04 20:48:09.485	level:INFO		thread:main	logger:net.dv8tion.jda.api.JDA	message:Login Successful!
+time:2021-9-04 20:48:09.908	level:INFO		thread:JDA MainWS-ReadThread	logger:net.dv8tion.jda.internal.requests.WebSocketClient	message:Connected to WebSocket
+time:2021-9-04 20:48:10.384	level:INFO		thread:JDA MainWS-ReadThread	logger:net.dv8tion.jda.api.JDA	message:Finished Loading!
+time:2021-9-04 20:51:01.284	level:INFO		thread:main	logger:net.dv8tion.jda.api.JDA	message:Login Successful!
+time:2021-9-04 20:51:01.581	level:INFO		thread:JDA MainWS-ReadThread	logger:net.dv8tion.jda.internal.requests.WebSocketClient	message:Connected to WebSocket
+time:2021-9-04 20:51:01.982	level:INFO		thread:JDA MainWS-ReadThread	logger:net.dv8tion.jda.api.JDA	message:Finished Loading!
