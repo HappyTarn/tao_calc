@@ -145,7 +145,6 @@ public class AmmountEvent extends MessageEvent {
 					monsterName = "【" + mm2.group(1) + "】";
 				}
 				monsterName = monsterName + mm.group(2);
-				event.getMessage().reply(monsterName).queue();
 				if(Const.tohru_list.contains(monsterName)) {
 					rank = Const.tohru;
 					String roleId = Sqlite.getRole(guildId, Const.発言不可);
