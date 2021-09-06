@@ -15,8 +15,8 @@ public class ShowExpCommand extends Command {
 
 	public ShowExpCommand() {
 		this.name = "showExp";
-		this.help = "現在の保有経験値を表示";
-		this.arguments = "[all,sall,@mention]";
+		this.help = "現在の保有経験値、討伐数を表示";
+		this.arguments = "[all,sall,pall,@mention]";
 		this.guildOnly = true;
 		this.ownerCommand = false;
 		this.aliases = new String[] { "showexp", "Showexp", "ShowExp", "se" };
@@ -68,7 +68,11 @@ public class ShowExpCommand extends Command {
 			embedBuilder.setTitle("討伐数一覧");
 
 			int count = 1;
+			Long sum = 0L;
 			for (Member member : memberList) {
+				if(member.get合計() == 0) {
+					continue;
+				}
 				if (count % 20 == 0) {
 					event.getMessage().reply(embedBuilder.build()).queue();
 					embedBuilder.clear();
@@ -76,6 +80,38 @@ public class ShowExpCommand extends Command {
 				}
 				embedBuilder.appendDescription(
 						String.format("> %s ： <@%s> \n", member.get合計(), member.getId()));
+				sum = sum + member.get合計();
+				count++;
+			}
+			event.getMessage().reply(embedBuilder.build()).queue();
+			embedBuilder.clear();
+			embedBuilder.setTitle("討伐数一覧");
+			embedBuilder.appendDescription(
+					String.format("> %s ： %s \n", sum, "全員の合計"));
+			event.getMessage().reply(embedBuilder.build()).queue();
+			
+			
+		} else if (event.getArgs().equals("pall")) {
+			List<Member> memberList = Sqlite.selectMemberOrderBySubjugation(guildId);
+			EmbedBuilder embedBuilder = new EmbedBuilder();
+			embedBuilder.setTitle("討伐数一覧（％）");
+
+			int count = 1;
+			Long sum = 0L;
+			for (Member member : memberList) {
+				sum = sum + member.get合計();
+			}
+			for (Member member : memberList) {
+				if(member.get合計() == 0) {
+					continue;
+				}
+				if (count % 20 == 0) {
+					event.getMessage().reply(embedBuilder.build()).queue();
+					embedBuilder.clear();
+					embedBuilder.setTitle("討伐数一覧（％）");
+				}
+				embedBuilder.appendDescription(
+						String.format("> %s％  ： <@%s> \n", (member.get合計()/sum)*100, member.getId()));
 				count++;
 			}
 			event.getMessage().reply(embedBuilder.build()).queue();
