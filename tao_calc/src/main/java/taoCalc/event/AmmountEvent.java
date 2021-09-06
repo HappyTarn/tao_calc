@@ -40,13 +40,13 @@ public class AmmountEvent extends MessageEvent {
 		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
 			return;
 		}
-		
+
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
 		// お試し
-		if(event.getMessage().getReferencedMessage().getContentRaw().toLowerCase().startsWith("::atk")) {
-			if(event.getMessage().getEmbeds().isEmpty()) {
-				if(event.getMessage().getContentRaw().contains("【超激レア】")){
+		if (event.getMessage().getReferencedMessage().getContentRaw().toLowerCase().startsWith("::atk")) {
+			if (event.getMessage().getEmbeds().isEmpty()) {
+				if (event.getMessage().getContentRaw().contains("【超激レア】")) {
 					String roleId = Sqlite.getRole(guildId, Const.発言不可);
 					Role role = event.getGuild().getRoleById(roleId);
 					if (role != null) {
@@ -61,7 +61,7 @@ public class AmmountEvent extends MessageEvent {
 				}
 			}
 		}
-		
+
 		String rank = "";
 		PlayerManager Playermanager = PlayerManager.getINSTANCE();
 		if (!event.getMessage().getEmbeds().isEmpty() && !(event.getMessage().getEmbeds().get(0).getTitle() == null)) {
@@ -114,24 +114,23 @@ public class AmmountEvent extends MessageEvent {
 		}
 		CalcManager Calcmanager = CalcManager.getINSTANCE();
 		Object obj = Calcmanager.getUserId(memberId);
-		
+
 		//攻撃力処理
 		Pattern atk = Pattern.compile("に(\\d+)のダメージ");
 		try {
 			Matcher atkm = atk.matcher(event.getMessage().getContentRaw().replaceAll(",", ""));
-			if(atkm.find()) {
+			if (atkm.find()) {
 				String dm = atkm.group(1);
-				if(obj instanceof Attack) {
-					Attack attack = (Attack)obj;
+				if (obj instanceof Attack) {
+					Attack attack = (Attack) obj;
 					attack.add(Double.parseDouble(dm));
 					Calcmanager.setData(memberId, attack);
 				}
 			}
-		}catch(Exception e) {
-			
+		} catch (Exception e) {
+
 		}
-		
-		
+
 		// モンスター名処理
 		Pattern mp = Pattern.compile("属性.* ランク:【(.+)】(.*)が待ち構えている");
 		Pattern mp2 = Pattern.compile("【(.+)");
@@ -139,13 +138,13 @@ public class AmmountEvent extends MessageEvent {
 		try {
 			Matcher mm = mp.matcher(
 					event.getMessage().getEmbeds().get(0).getTitle().replaceAll("\\r", "").replaceAll("\\n", ""));
-			if(mm.find()) {
+			if (mm.find()) {
 				Matcher mm2 = mp2.matcher(mm.group(1));
-				if(mm2.find()) {
+				if (mm2.find()) {
 					monsterName = "【" + mm2.group(1) + "】";
 				}
 				monsterName = monsterName + mm.group(2);
-				if(Const.tohru_list.contains(monsterName)) {
+				if (Const.tohru_list.contains(monsterName)) {
 					rank = Const.tohru;
 					String roleId = Sqlite.getRole(guildId, Const.発言不可);
 					Role role = event.getGuild().getRoleById(roleId);
@@ -163,19 +162,24 @@ public class AmmountEvent extends MessageEvent {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+
 		boolean isSkip = false;
-		for(Category cat : event.getGuild().getCategories()) {
-			if(cat.getName().contains("付与対象外")) {
-				for(GuildChannel c : cat.getChannels()) {
-					if(c.getId().equals(event.getChannel().getId())) {
+		for (Category cat : event.getGuild().getCategories()) {
+			if (cat.getName().contains("付与対象外")) {
+				for (GuildChannel c : cat.getChannels()) {
+					if (c.getId().equals(event.getChannel().getId())) {
 						isSkip = true;
 					}
 				}
 			}
 		}
-		if(event.getChannel().getName().startsWith("！")) {
+		if (event.getChannel().getName().startsWith("！")) {
 			isSkip = true;
+		}
+
+		Long waru = 1L;
+		if (event.getChannel().getName().startsWith("÷")) {
+			waru = 2L;
 		}
 
 		if (!rank.isEmpty()) {
@@ -190,12 +194,12 @@ public class AmmountEvent extends MessageEvent {
 			MonsterRate monsterRate = null;
 			Long prizeMoney = 0L;
 			if (!monsterName.isEmpty()) {
-				
-				if(!isSkip) {
+
+				if (!isSkip) {
 					monsterRate = Sqlite.selectMonsterRateInfoByName(guildId, monsterName);
-					
+
 					PrizeMoneyInfo pmi = Sqlite.selectPrizeMoneyInfoByName(guildId, monsterName);
-					
+
 					if (pmi != null && pmi.getExp() != 0) {
 						Random rand = new Random();
 						if (pmi.getExp() > 10) {
@@ -233,12 +237,12 @@ public class AmmountEvent extends MessageEvent {
 			Long before = 0L;
 			Long after = 0L;
 			if (member == null) {
-				member = new Member(memberId, rate != null ? rate.getAmount() : 0L);
-				if(!isSkip) {
+				member = new Member(memberId, (rate != null && rate.getAmount() != 0) ? rate.getAmount() / waru : 0L);
+				if (!isSkip) {
 					member = new Member(memberId, 0L);
-					
-					if (monsterRate != null) {
-						member.addExp(monsterRate.getAmount());
+
+					if (monsterRate != null && monsterRate.getAmount() != 0) {
+						member.addExp(monsterRate.getAmount() / waru);
 					}
 					member.addExp(prizeMoney.longValue());
 				}
@@ -247,10 +251,10 @@ public class AmmountEvent extends MessageEvent {
 				after = member.getExp();
 			} else {
 				before = member.getExp();
-				if(!isSkip) {
-					member.addExp(rate != null ? rate.getAmount() : 0L);
-					if (monsterRate != null) {
-						member.addExp(monsterRate.getAmount());
+				if (!isSkip) {
+					member.addExp((rate != null && rate.getAmount() != 0) ? rate.getAmount() / waru : 0L);
+					if (monsterRate != null && monsterRate.getAmount() != 0) {
+						member.addExp(monsterRate.getAmount() / waru);
 					}
 					member.addExp(prizeMoney.longValue());
 				}
@@ -259,28 +263,28 @@ public class AmmountEvent extends MessageEvent {
 				after = member.getExp();
 			}
 
-			if(!isSkip) {
+			if (!isSkip) {
 				if ((rate != null && rate.getAmount() != 0) || (monsterRate != null && monsterRate.getAmount() != 0)
 						|| prizeMoney != 0) {
 					EmbedBuilder eb = new EmbedBuilder();
 					NumberFormat nfNum = NumberFormat.getNumberInstance();
 					eb.setTitle("経験値を付与しました。");
-					
+
 					if (prizeMoney != 0) {
 						eb.addField("懸賞金獲得", Utility.convertCommaToStr(prizeMoney.longValue()), false);
 					}
-					
-					Long exp = rate != null ? rate.getAmount() : 0L;
-					exp += monsterRate != null ? monsterRate.getAmount() : 0L;
-					
+
+					Long exp = (rate != null && rate.getAmount() != 0) ? rate.getAmount() / waru : 0L;
+					exp += (monsterRate != null && monsterRate.getAmount() != 0) ? monsterRate.getAmount() / waru : 0L;
+
 					if (exp != 0) {
 						eb.addField("経験値獲得", Utility.convertCommaToStr(exp), false);
 					}
-					
+
 					eb.addField(event.getMessage().getReferencedMessage().getAuthor().getName(),
 							nfNum.format(before) + " -> " + nfNum.format(after), false);
 					event.getMessage().reply(eb.build()).queue();
-					
+
 				}
 			}
 		}
@@ -318,12 +322,12 @@ public class AmmountEvent extends MessageEvent {
 				boolean isInhoriUpdate = false;
 				boolean isAddRank = false;
 				Penetration p = null;
-				if(obj instanceof Penetration) {
+				if (obj instanceof Penetration) {
 					p = (Penetration) obj;
 				}
 				if (inhoriList.size() == 2) {
 					//貫通１回
-					if(p != null) {
+					if (p != null) {
 						p.addOne();
 						Calcmanager.setData(memberId, p);
 					}
@@ -332,8 +336,8 @@ public class AmmountEvent extends MessageEvent {
 						rate = Sqlite.selectRateByRank(guildId, Utility.getRank(inhoriList.get(0), inhoriList.get(1)));
 					}
 					if (rate != null && rate.getAmount() != 0) {
-						if(!isSkip) {
-							member.addExp(rate.getAmount());
+						if (!isSkip) {
+							member.addExp(rate.getAmount() / waru);
 							isInhoriUpdate = true;
 						}
 					}
@@ -343,7 +347,7 @@ public class AmmountEvent extends MessageEvent {
 					}
 				} else {
 					//貫通２回
-					if(p != null) {
+					if (p != null) {
 						p.addTwo();
 						Calcmanager.setData(memberId, p);
 					}
@@ -352,8 +356,8 @@ public class AmmountEvent extends MessageEvent {
 						rate = Sqlite.selectRateByRank(guildId, Utility.getRank(inhoriList.get(0), inhoriList.get(1)));
 					}
 					if (rate != null && rate.getAmount() != 0) {
-						if(!isSkip) {
-							member.addExp(rate.getAmount());
+						if (!isSkip) {
+							member.addExp(rate.getAmount() / waru);
 							isInhoriUpdate = true;
 						}
 					}
@@ -366,8 +370,8 @@ public class AmmountEvent extends MessageEvent {
 						rate = Sqlite.selectRateByRank(guildId, Utility.getRank(inhoriList.get(2), inhoriList.get(1)));
 					}
 					if (rate != null && rate.getAmount() != 0) {
-						if(!isSkip) {
-							member.addExp(rate.getAmount());
+						if (!isSkip) {
+							member.addExp(rate.getAmount() / waru);
 							isInhoriUpdate = true;
 						}
 					}
