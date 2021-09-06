@@ -111,7 +111,7 @@ public class ShowExpCommand extends Command {
 					embedBuilder.setTitle("討伐数一覧（％）");
 				}
 				embedBuilder.appendDescription(
-						String.format("> %s％  ： <@%s> \n", (member.get合計()/sum)*100, member.getId()));
+						String.format("> %s％  ： <@%s> \n", ((float) member.get合計() / (float) sum * 100), member.getId()));
 				count++;
 			}
 			event.getMessage().reply(embedBuilder.build()).queue();
