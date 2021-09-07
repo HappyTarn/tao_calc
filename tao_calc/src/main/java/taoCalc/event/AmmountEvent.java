@@ -8,12 +8,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import taoCalc.CalcManager;
 import taoCalc.Const;
 import taoCalc.PlayerManager;
@@ -40,7 +42,8 @@ public class AmmountEvent extends MessageEvent {
 		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
 			return;
 		}
-
+		
+		Boolean isWrite = PermissionUtil.checkPermission(event.getGuild().getTextChannelById(event.getChannel().getId()),event.getMember(),Permission.MESSAGE_WRITE);
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
 		// お試し
@@ -160,7 +163,6 @@ public class AmmountEvent extends MessageEvent {
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
 
 		boolean isSkip = false;
@@ -283,7 +285,10 @@ public class AmmountEvent extends MessageEvent {
 
 					eb.addField(event.getMessage().getReferencedMessage().getAuthor().getName(),
 							nfNum.format(before) + " -> " + nfNum.format(after), false);
-					event.getMessage().reply(eb.build()).queue();
+					
+					if(isWrite) {
+						event.getMessage().reply(eb.build()).queue();
+					}
 
 				}
 			}
@@ -414,7 +419,9 @@ public class AmmountEvent extends MessageEvent {
 					eb.addField(event.getMessage().getReferencedMessage().getAuthor().getName(),
 							nfNum.format(before) + " -> " + nfNum.format(after), false);
 					eb.setFooter("貫通分の表示（お試し）");
-					event.getMessage().reply(eb.build()).queue();
+					if(isWrite) {
+						event.getMessage().reply(eb.build()).queue();
+					}
 				}
 			}
 
