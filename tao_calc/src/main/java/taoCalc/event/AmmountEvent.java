@@ -296,6 +296,10 @@ public class AmmountEvent extends MessageEvent {
 
 		//イン堀対応
 
+		if(event.getGuild().getId().equals("838732784305569792")) {
+			return;
+		}
+		
 		List<String> inhoriList = new ArrayList<String>();
 		if (event.getMessage() != null && !event.getMessage().getContentRaw().isEmpty()) {
 			Pattern p1 = Pattern.compile(
