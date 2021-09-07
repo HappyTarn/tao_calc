@@ -43,7 +43,7 @@ public class AmmountEvent extends MessageEvent {
 			return;
 		}
 		
-		Boolean isWrite = PermissionUtil.checkPermission(event.getGuild().getTextChannelById(event.getChannel().getId()),event.getMember(),Permission.MESSAGE_WRITE);
+		Boolean isWrite = PermissionUtil.checkPermission(event.getGuild().getTextChannelById(event.getChannel().getId()),event.getGuild().getSelfMember(),Permission.MESSAGE_WRITE);
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
 		// お試し
