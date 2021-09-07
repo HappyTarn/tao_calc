@@ -65,6 +65,11 @@ public class Listener extends ListenerAdapter {
 					for (Member member : memberList) {
 						if (count % 20 == 0) {
 							guild.getTextChannelById(expInfoChannel).sendMessage(eb.build()).queue();
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 							eb.clear();
 							eb.setTitle("保有経験値");
 						}

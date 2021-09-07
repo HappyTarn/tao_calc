@@ -53,6 +53,11 @@ public class ShowExpCommand extends Command {
 			for (Member member : memberList) {
 				if (count % 20 == 0) {
 					event.getMessage().reply(embedBuilder.build()).queue();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					embedBuilder.clear();
 					embedBuilder.setTitle("保有経験値");
 				}
@@ -75,6 +80,11 @@ public class ShowExpCommand extends Command {
 				}
 				if (count % 20 == 0) {
 					event.getMessage().reply(embedBuilder.build()).queue();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					embedBuilder.clear();
 					embedBuilder.setTitle("討伐数一覧");
 				}
@@ -107,6 +117,11 @@ public class ShowExpCommand extends Command {
 				}
 				if (count % 20 == 0) {
 					event.getMessage().reply(embedBuilder.build()).queue();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					embedBuilder.clear();
 					embedBuilder.setTitle("討伐数一覧（％）");
 				}
