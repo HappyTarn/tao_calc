@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import taoCalc.CalcManager;
+import taoCalc.dto.Material;
 import taoCalc.util.Utility;
 
 public class MessageEvent extends ListenerAdapter {
@@ -19,7 +21,9 @@ public class MessageEvent extends ListenerAdapter {
 		new PrizeMoneyEvent().onMessageReceived(event);
 		new PetCount().onMessageReceived(event);
 		rmapCalc(event);
-		
+
+		materiaCalc(event);
+
 	}
 
 	@Override
@@ -27,12 +31,63 @@ public class MessageEvent extends ListenerAdapter {
 		new PetCount().onMessageUpdate(event);
 		rankCalc(event);
 	}
-	
+
 	@Override
 	public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
 		new AmmountEvent().onGuildMessageReactionAdd(event);
 	}
-	
+
+	/**
+	 * 素材のカウント
+	 * @param event
+	 */
+	private void materiaCalc(MessageReceivedEvent event) {
+		if (!event.getAuthor().getId().equals("526620171658330112")) {
+			return;
+		}
+
+		if (event.getMessage().getEmbeds() != null && event.getMessage().getEmbeds().isEmpty()) {
+			return;
+		}
+
+		MessageEmbed embed = event.getMessage().getEmbeds().get(0);
+
+		if (!"戦闘結果:".equals(embed.getTitle())) {
+			return;
+		}
+
+		String userId = event.getMessage().getReferencedMessage().getAuthor().getId();
+		if (userId == null || userId.isEmpty()) {
+			return;
+		}
+
+		CalcManager Calcmanager = CalcManager.getINSTANCE();
+		Object obj = Calcmanager.getUserId(userId);
+		if(obj == null) {
+			return;
+		}
+		Material material = null;
+		if (obj instanceof Material) {
+			material = (Material) obj;
+		}
+		
+		boolean isMateria = false;
+		for(Field f : embed.getFields()) {
+			if(f.getValue().contains("[素材]")) {
+				isMateria = true;
+			}
+		}
+		
+		if(isMateria) {
+			material.addMateriaCount();
+		}else {
+			material.addBattleCount();
+		}
+		
+		Calcmanager.setData(userId, material);
+
+	}
+
 	/**
 	 * rmapの集計
 	 * @param event
@@ -90,7 +145,7 @@ public class MessageEvent extends ListenerAdapter {
 		event.getMessage().reply(stringBuilder.toString()).queue();
 
 	}
-	
+
 	/**
 	 * rmapの集計
 	 * @param event
@@ -101,30 +156,29 @@ public class MessageEvent extends ListenerAdapter {
 			return;
 		}
 
-		if (!event.getMessage().getReferencedMessage().getContentRaw().contains("rank")){
+		if (!event.getMessage().getReferencedMessage().getContentRaw().contains("rank")) {
 			return;
 		}
-		
-		if (!event.getMessage().getReferencedMessage().getContentRaw().endsWith("a")){
+
+		if (!event.getMessage().getReferencedMessage().getContentRaw().endsWith("a")) {
 			return;
 		}
 
 		if (event.getMessage().getEmbeds() != null && event.getMessage().getEmbeds().isEmpty()) {
 			return;
 		}
-		
+
 		if (!event.getMessage().getContentRaw().contains("見たいページを発言してください")) {
 			return;
 		}
 
 		MessageEmbed embed = event.getMessage().getEmbeds().get(0);
-		
-		EmbedBuilder eb = new EmbedBuilder(embed);
-		
-		eb.setDescription(embed.getDescription().replaceAll("\\(<\\('', ''\\)>\\)", ""));
-		
-		event.getMessage().reply(eb.build()).queue();
 
+		EmbedBuilder eb = new EmbedBuilder(embed);
+
+		eb.setDescription(embed.getDescription().replaceAll("\\(<\\('', ''\\)>\\)", ""));
+
+		event.getMessage().reply(eb.build()).queue();
 
 	}
 }

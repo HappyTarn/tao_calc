@@ -6,6 +6,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import taoCalc.CalcManager;
 import taoCalc.dto.Attack;
+import taoCalc.dto.Material;
 import taoCalc.dto.Penetration;
 
 /**
@@ -17,7 +18,7 @@ public class CalcCommand extends Command {
 	public CalcCommand() {
 		this.name = "calc";
 		this.help = "貫通の計算、攻撃力を計算";
-		this.arguments = "[貫通,攻撃]";
+		this.arguments = "[貫通,攻撃,素材]";
 		this.guildOnly = false;
 		this.aliases = new String[] { "calc" };
 	}
@@ -49,6 +50,14 @@ public class CalcCommand extends Command {
 				eb.addField("最小ダメージ", attack.getMinString(), true);
 				event.getMessage().reply(eb.build()).queue();
 			}
+			
+			if (obj instanceof Material) {
+				Material material = (Material)obj;
+				EmbedBuilder eb = new EmbedBuilder();
+				eb.setTitle("素材の結果");
+				eb.addField("戦闘結果(素材獲得数)", material.get割合(), false);
+				event.getMessage().reply(eb.build()).queue();
+			}
 
 		}
 
@@ -62,6 +71,12 @@ public class CalcCommand extends Command {
 			Attack a = new Attack();
 			Calcmanager.setData(event.getAuthor().getId(), a);
 			event.getMessage().reply("攻撃力の計測を始めます").queue();
+		}
+		
+		if ("素材".equals(event.getArgs())) {
+			Material a = new Material();
+			Calcmanager.setData(event.getAuthor().getId(), a);
+			event.getMessage().reply("素材の計測を始めます").queue();
 		}
 	}
 
