@@ -33,7 +33,7 @@ public class Private extends Command {
 		if("on".equals(event.getArgs())) {
 			event.getGuild().getGuildChannelById(event.getChannel().getId()).putPermissionOverride(event.getGuild().getPublicRole()).setDeny(Permission.VIEW_CHANNEL).queue();
 		}else if("off".equals(event.getArgs())) {
-			event.getGuild().getGuildChannelById(event.getChannel().getId()).putPermissionOverride(event.getGuild().getPublicRole()).setAllow(Permission.VIEW_CHANNEL).queue();
+			event.getGuild().getGuildChannelById(event.getChannel().getId()).putPermissionOverride(event.getGuild().getPublicRole()).resetDeny().queue();
 		}
 	}
 	
