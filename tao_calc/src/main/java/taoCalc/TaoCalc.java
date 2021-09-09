@@ -37,6 +37,7 @@ import taoCalc.commands.MtCommand;
 import taoCalc.commands.MtoCommand;
 import taoCalc.commands.PingCommand;
 import taoCalc.commands.PlayCommand;
+import taoCalc.commands.Private;
 import taoCalc.commands.SetExpInfoChannelCommand;
 import taoCalc.commands.SetPrizeInfoChannelCommand;
 import taoCalc.commands.SetRoleCommand;
@@ -119,6 +120,7 @@ public class TaoCalc {
 				new CalcCommand(),
 				new MtCommand(),
 				new MtoCommand(),
+				new Private(),
 				new AddExpCommand());
 		
 
