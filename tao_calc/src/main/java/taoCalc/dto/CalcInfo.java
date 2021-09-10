@@ -14,6 +14,14 @@ public class CalcInfo {
 
 	private Double max = Double.MIN_VALUE;
 	private Double min = Double.MAX_VALUE;
+	
+	private Double critical = 0D;
+	
+	public void addCritical(Double d) {
+		if(d > critical) {
+			critical = d;
+		}
+	}
 
 	public void addDamage(Double i) {
 		if (i > max) {
@@ -49,9 +57,14 @@ public class CalcInfo {
 		NumberFormat nfNum = NumberFormat.getNumberInstance();
 		return nfNum.format(min);
 	}
+	
+	public String getCriString() {
+		NumberFormat nfNum = NumberFormat.getNumberInstance();
+		return nfNum.format(critical);
+	}
 
 	public void addBattleCount() {
-		bukikonCount++;
+		battleCount++;
 	}
 
 	public void addMateriaCount() {
@@ -59,7 +72,7 @@ public class CalcInfo {
 	}
 
 	public String get素材割合() {
-		if (battleCount == 0) {
+		if (materiaCount == 0) {
 			return "データがないよ";
 		}
 
@@ -72,11 +85,11 @@ public class CalcInfo {
 	}
 
 	public void addBukikonCount() {
-		materiaCount++;
+		bukikonCount++;
 	}
 
 	public String get武器魂割合() {
-		if (battleCount == 0) {
+		if (bukikonCount == 0) {
 			return "データがないよ";
 		}
 

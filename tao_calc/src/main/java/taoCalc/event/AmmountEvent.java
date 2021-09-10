@@ -121,15 +121,26 @@ public class AmmountEvent extends MessageEvent {
 
 		//攻撃力処理
 		Pattern atk = Pattern.compile("に(\\d+)のダメージ");
+		Pattern criticalatk = Pattern.compile(".*会心の一撃.*に(\\d+)のダメージ");
 		try {
 			Matcher atkm = atk.matcher(event.getMessage().getContentRaw().replaceAll(",", ""));
-			if (atkm.find()) {
-				String dm = atkm.group(1);
+			Matcher criticalatkm = criticalatk.matcher(event.getMessage().getContentRaw().replaceAll(",", ""));
+			if (criticalatkm.find()) {
+				String dm = criticalatkm.group(1);
 				if (calcInfo == null) {
 					calcInfo = new CalcInfo();
 				}
-				calcInfo.addDamage(Double.parseDouble(dm));
+				calcInfo.addCritical(Double.parseDouble(dm));
 				Calcmanager.setData(memberId, calcInfo);
+			}else {
+				if (atkm.find()) {
+					String dm = atkm.group(1);
+					if (calcInfo == null) {
+						calcInfo = new CalcInfo();
+					}
+					calcInfo.addDamage(Double.parseDouble(dm));
+					Calcmanager.setData(memberId, calcInfo);
+				}
 			}
 		} catch (Exception e) {
 

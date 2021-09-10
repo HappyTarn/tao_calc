@@ -38,6 +38,8 @@ public class CalcCommand extends Command {
 
 			eb.addField("最大ダメージ", calcInfo.getMaxString(), true);
 			eb.addField("最小ダメージ", calcInfo.getMinString(), true);
+			
+			eb.addField("会心最大ダメージ", calcInfo.getCriString(), false);
 
 			eb.addField("貫通割合", calcInfo.get貫通割合(), false);
 
@@ -50,7 +52,7 @@ public class CalcCommand extends Command {
 		}
 
 		if ("reset".equals(event.getArgs())) {
-			Calcmanager.setData(event.getAuthor().getId(), new CalcInfo());
+			Calcmanager.setData(event.getAuthor().getId(), null);
 			event.getMessage().reply("データをリセットしました。").queue();
 		}
 
