@@ -43,7 +43,7 @@ public class CalcCommand extends Command {
 
 			eb.addField("素材割合", calcInfo.get素材割合(), false);
 
-			eb.addField("戦闘結果(武器魂獲得数)", calcInfo.get武器魂割合(), false);
+			eb.addField("武器魂割合", calcInfo.get武器魂割合(), false);
 
 			event.getMessage().reply(eb.build()).queue();
 
