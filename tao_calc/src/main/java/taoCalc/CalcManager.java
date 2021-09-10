@@ -2,10 +2,12 @@ package taoCalc;
 
 import java.util.HashMap;
 
+import taoCalc.dto.CalcInfo;
+
 public class CalcManager {
 	private static CalcManager INSTANCE;
 
-	private HashMap<String, Object> data = new HashMap<String, Object>();
+	private HashMap<String, CalcInfo> data = new HashMap<String, CalcInfo>();
 
 	private CalcManager() {
 	}
@@ -19,11 +21,11 @@ public class CalcManager {
 	}
 
 
-	public void setData(String userId, Object obj) {
+	public void setData(String userId, CalcInfo obj) {
 		data.put(userId, obj);
 	}
 
-	public Object getUserId(String id) {
+	public CalcInfo getUserId(String id) {
 		return data.get(id);
 	}
 

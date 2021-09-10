@@ -20,10 +20,9 @@ import taoCalc.CalcManager;
 import taoCalc.Const;
 import taoCalc.PlayerManager;
 import taoCalc.db.Sqlite;
-import taoCalc.dto.Attack;
+import taoCalc.dto.CalcInfo;
 import taoCalc.dto.Member;
 import taoCalc.dto.MonsterRate;
-import taoCalc.dto.Penetration;
 import taoCalc.dto.PrizeMoneyInfo;
 import taoCalc.dto.Rate;
 import taoCalc.util.Utility;
@@ -42,8 +41,10 @@ public class AmmountEvent extends MessageEvent {
 		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
 			return;
 		}
-		
-		Boolean isWrite = PermissionUtil.checkPermission(event.getGuild().getTextChannelById(event.getChannel().getId()),event.getGuild().getSelfMember(),Permission.MESSAGE_WRITE);
+
+		Boolean isWrite = PermissionUtil.checkPermission(
+				event.getGuild().getTextChannelById(event.getChannel().getId()), event.getGuild().getSelfMember(),
+				Permission.MESSAGE_WRITE);
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
 		// お試し
@@ -116,7 +117,7 @@ public class AmmountEvent extends MessageEvent {
 			}
 		}
 		CalcManager Calcmanager = CalcManager.getINSTANCE();
-		Object obj = Calcmanager.getUserId(memberId);
+		CalcInfo calcInfo = Calcmanager.getUserId(memberId);
 
 		//攻撃力処理
 		Pattern atk = Pattern.compile("に(\\d+)のダメージ");
@@ -124,11 +125,11 @@ public class AmmountEvent extends MessageEvent {
 			Matcher atkm = atk.matcher(event.getMessage().getContentRaw().replaceAll(",", ""));
 			if (atkm.find()) {
 				String dm = atkm.group(1);
-				if (obj instanceof Attack) {
-					Attack attack = (Attack) obj;
-					attack.add(Double.parseDouble(dm));
-					Calcmanager.setData(memberId, attack);
+				if (calcInfo == null) {
+					calcInfo = new CalcInfo();
 				}
+				calcInfo.addDamage(Double.parseDouble(dm));
+				Calcmanager.setData(memberId, calcInfo);
 			}
 		} catch (Exception e) {
 
@@ -285,8 +286,8 @@ public class AmmountEvent extends MessageEvent {
 
 					eb.addField(event.getMessage().getReferencedMessage().getAuthor().getName(),
 							nfNum.format(before) + " -> " + nfNum.format(after), false);
-					
-					if(isWrite) {
+
+					if (isWrite) {
 						event.getMessage().reply(eb.build()).queue();
 					}
 
@@ -296,10 +297,10 @@ public class AmmountEvent extends MessageEvent {
 
 		//イン堀対応
 
-		if(event.getGuild().getId().equals("838732784305569792")) {
+		if (event.getGuild().getId().equals("838732784305569792")) {
 			return;
 		}
-		
+
 		List<String> inhoriList = new ArrayList<String>();
 		if (event.getMessage() != null && !event.getMessage().getContentRaw().isEmpty()) {
 			Pattern p1 = Pattern.compile(
@@ -330,15 +331,11 @@ public class AmmountEvent extends MessageEvent {
 				//インホリ
 				boolean isInhoriUpdate = false;
 				boolean isAddRank = false;
-				Penetration p = null;
-				if (obj instanceof Penetration) {
-					p = (Penetration) obj;
-				}
 				if (inhoriList.size() == 2) {
 					//貫通１回
-					if (p != null) {
-						p.addOne();
-						Calcmanager.setData(memberId, p);
+					if (calcInfo != null) {
+						calcInfo.addOne();
+						Calcmanager.setData(memberId, calcInfo);
 					}
 					Rate rate = null;
 					if (Utility.getRank(inhoriList.get(0), inhoriList.get(1)) != null) {
@@ -356,9 +353,9 @@ public class AmmountEvent extends MessageEvent {
 					}
 				} else {
 					//貫通２回
-					if (p != null) {
-						p.addTwo();
-						Calcmanager.setData(memberId, p);
+					if (calcInfo != null) {
+						calcInfo.addTwo();
+						Calcmanager.setData(memberId, calcInfo);
 					}
 					Rate rate = null;
 					if (Utility.getRank(inhoriList.get(0), inhoriList.get(1)) != null) {
@@ -423,7 +420,7 @@ public class AmmountEvent extends MessageEvent {
 					eb.addField(event.getMessage().getReferencedMessage().getAuthor().getName(),
 							nfNum.format(before) + " -> " + nfNum.format(after), false);
 					eb.setFooter("貫通分の表示（お試し）");
-					if(isWrite) {
+					if (isWrite) {
 						event.getMessage().reply(eb.build()).queue();
 					}
 				}

@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import taoCalc.CalcManager;
-import taoCalc.dto.Material;
+import taoCalc.dto.CalcInfo;
 import taoCalc.util.Utility;
 
 public class MessageEvent extends ListenerAdapter {
@@ -62,29 +62,32 @@ public class MessageEvent extends ListenerAdapter {
 		}
 
 		CalcManager Calcmanager = CalcManager.getINSTANCE();
-		Object obj = Calcmanager.getUserId(userId);
-		if(obj == null) {
-			return;
+		CalcInfo calcInfo = Calcmanager.getUserId(userId);
+		if (calcInfo == null) {
+			calcInfo = new CalcInfo();
 		}
-		Material material = null;
-		if (obj instanceof Material) {
-			material = (Material) obj;
-		}
-		
+
 		boolean isMateria = false;
-		for(Field f : embed.getFields()) {
-			if(f.getValue().contains("[素材]")) {
+		boolean isBukikon = false;
+		for (Field f : embed.getFields()) {
+			if (f.getValue().contains("[素材]")) {
 				isMateria = true;
 			}
+			if (f.getValue().contains("武器魂")) {
+				isBukikon = true;
+			}
 		}
-		
-		if(isMateria) {
-			material.addMateriaCount();
-		}else {
-			material.addBattleCount();
+		calcInfo.addBattleCount();
+
+		if (isMateria) {
+			calcInfo.addMateriaCount();
 		}
-		
-		Calcmanager.setData(userId, material);
+
+		if (isBukikon) {
+			calcInfo.addBukikonCount();
+		}
+
+		Calcmanager.setData(userId, calcInfo);
 
 	}
 
