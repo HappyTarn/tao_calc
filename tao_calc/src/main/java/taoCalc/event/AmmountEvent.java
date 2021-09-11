@@ -10,11 +10,13 @@ import java.util.regex.Pattern;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import taoCalc.CalcManager;
 import taoCalc.Const;
@@ -56,11 +58,9 @@ public class AmmountEvent extends MessageEvent {
 					if (role != null) {
 						event.getGuild().addRoleToMember(memberId, role).queue();
 						EmbedBuilder eb = new EmbedBuilder();
-						eb.setTitle("リアクション押下で発言不可解除です！");
-						eb.setDescription("「tc:mt <メッセージ>」で通知を出せるよ！");
-						eb.setFooter("↓押してね！");
-						Message ms = event.getMessage().reply(eb.build()).complete();
-						ms.addReaction("U+1F91E").queue();
+						eb.setTitle("超激レアが出たよ！");
+						event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知")).queue();
 					}
 				}
 			}
@@ -96,11 +96,9 @@ public class AmmountEvent extends MessageEvent {
 						if (role != null) {
 							event.getGuild().addRoleToMember(memberId, role).queue();
 							EmbedBuilder eb = new EmbedBuilder();
-							eb.setTitle("リアクション押下で発言不可解除です！");
-							eb.setDescription("「tc:mt <メッセージ>」で通知を出せるよ！");
-							eb.setFooter("↓押してね！");
-							Message ms = event.getMessage().reply(eb.build()).complete();
-							ms.addReaction("U+1F91E").queue();
+							eb.setTitle("超激レアが出たよ！");
+							event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+									Button.of(ButtonStyle.PRIMARY,"tcmt", "通知")).queue();
 						}
 						if (Playermanager.isJoin(event.getGuild().getId())
 								&& memberId.equals(Playermanager.getUserId(event.getGuild().getId()))) {
@@ -166,11 +164,9 @@ public class AmmountEvent extends MessageEvent {
 					if (role != null) {
 						event.getGuild().addRoleToMember(memberId, role).queue();
 						EmbedBuilder eb = new EmbedBuilder();
-						eb.setTitle("リアクション押下で発言不可解除です！");
-						eb.setDescription("「tc:mt <メッセージ>」で通知を出せるよ！");
-						eb.setFooter("↓押してね！");
-						Message ms = event.getMessage().reply(eb.build()).complete();
-						ms.addReaction("U+1F91E").queue();
+						eb.setTitle("超激レアが出たよ！");
+						event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知")).queue();
 					}
 				}
 			}

@@ -1,17 +1,12 @@
 package taoCalc.commands;
 
-import java.text.NumberFormat;
-import java.util.Random;
-
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import taoCalc.Const;
-import taoCalc.db.Sqlite;
-import taoCalc.dto.Member;
-import taoCalc.dto.PrizeMoneyInfo;
-import taoCalc.util.Utility;
+import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 
 /**
  *
@@ -79,73 +74,13 @@ public class TestCommand extends Command {
 			eb.setImage(
 					"https://media.discordapp.net/attachments/859205662441209897/871363870676115456/ea18237a67b1851bf992d4878214d40f.png?width=115&height=115");
 			event.getMessage().reply(eb.build()).queue();
-		} else if (event.getArgs().equals("iro")) {
-			String memberId = "695257922854453358";
-			if(!event.getAuthor().getId().equals(memberId)) {
-				return;
-			}
-			String guildId = event.getGuild().getId();
-			String monsterName = "The=One (王)";
-
-			PrizeMoneyInfo pmi = Sqlite.selectPrizeMoneyInfoByName(guildId, monsterName);
-			Long prizeMoney = 0L;
-			if (!(pmi.getExp() == 1000L)) {
-				return;
-			}
-			if (pmi != null && pmi.getExp() != 0) {
-				Random rand = new Random();
-				if (pmi.getExp() > 10) {
-					switch (rand.nextInt(100) + 1) {
-					case 1:
-						prizeMoney = pmi.getExp();
-						break;
-					case 2:
-					case 3:
-					case 4:
-					case 5:
-					case 6:
-					case 7:
-					case 8:
-					case 9:
-					case 10:
-					case 11:
-						prizeMoney = (long) (rand.nextInt(pmi.getExp().intValue()) + 1);
-						break;
-					default:
-						prizeMoney = (long) (rand.nextInt(10) + 1);
-						break;
-					}
-				} else {
-					prizeMoney = (long) (rand.nextInt(pmi.getExp().intValue()) + 1);
-				}
-				pmi.setExp(pmi.getExp() - prizeMoney);
-				Sqlite.updatePrizeMoneyInfo(guildId, pmi);
-			}
-
-			Member member = Sqlite.selectMemberById(guildId, memberId);
-			String rank = Const.tohru;
-			Long before = 0L;
-			Long after = 0L;
-			before = member.getExp();
-			member.addExp(prizeMoney.longValue());
-			member.addRank(rank);
-			Sqlite.updateMember(guildId, member);
-			after = member.getExp();
-
+		} else if (event.getArgs().equals("5")) {
 			EmbedBuilder eb = new EmbedBuilder();
-			NumberFormat nfNum = NumberFormat.getNumberInstance();
-			eb.setTitle("経験値を付与しました。");
-
-			if (prizeMoney != 0) {
-				eb.addField("懸賞金獲得", Utility.convertCommaToStr(prizeMoney.longValue()), false);
-			}
-
-			eb.addField(event.getAuthor().getName(),
-					nfNum.format(before) + " -> " + nfNum.format(after), false);
-			event.getMessage().reply(eb.build()).queue();
-
+			eb.setTitle("超激レアが出たよ！");
+			event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+					Button.of(ButtonStyle.PRIMARY,"tcmt", "通知")).queue();
 		}
 
 	}
-
+	
 }

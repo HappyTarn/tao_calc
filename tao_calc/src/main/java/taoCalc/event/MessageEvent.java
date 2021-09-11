@@ -1,17 +1,58 @@
 package taoCalc.event;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import taoCalc.CalcManager;
+import taoCalc.Const;
+import taoCalc.db.Sqlite;
 import taoCalc.dto.CalcInfo;
 import taoCalc.util.Utility;
 
 public class MessageEvent extends ListenerAdapter {
+
+	public void onButtonClick(ButtonClickEvent event) {
+		
+		//通知ボタン
+		if (event.getComponentId().equals("tcmt")) {
+			MessageChannel mtChannel = null;
+			for (GuildChannel c : event.getGuild().getChannels()) {
+				if (c.getName().contains("レアキャラ報告")) {
+					mtChannel = (MessageChannel) c;
+				}
+			}
+			
+			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.超激レア報告OK);
+			Role role = event.getGuild().getRoleById(roleId);
+
+			if (mtChannel != null && role != null) {
+
+				mtChannel.sendMessage(role.getAsMention() +"：<#" + event.getChannel().getId() + "> で超激レアが出たよ！\n"
+						+ "> 通知した人：<@" + event.getMember().getId() + ">").queue();
+				
+				event.editButton(event.getButton().asDisabled()).queue();
+			}
+		}
+		
+		//発言不可解除ボタン
+		if(event.getComponentId().equals("removeRole")) {
+			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.発言不可);
+			Role role = event.getGuild().getRoleById(roleId);
+			if (role != null) {
+				event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
+			} else {
+				event.getChannel().sendMessage("発言不可解除失敗！管理者に外してもらって！");
+			}
+		}
+	}
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
