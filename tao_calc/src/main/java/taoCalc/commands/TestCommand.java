@@ -4,7 +4,6 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 
@@ -76,9 +75,11 @@ public class TestCommand extends Command {
 			event.getMessage().reply(eb.build()).queue();
 		} else if (event.getArgs().equals("5")) {
 			EmbedBuilder eb = new EmbedBuilder();
-			eb.setTitle("超激レアが出たよ！");
-			event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-					Button.of(ButtonStyle.PRIMARY,"tcmt", "通知")).queue();
+			eb.setTitle("どこで出た？");
+			event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.PRIMARY,"tcmto 公式", "公式"),
+					Button.of(ButtonStyle.PRIMARY,"tcmto DW", "DW"),
+					Button.of(ButtonStyle.PRIMARY,"tcmto KING", "KING"),
+					Button.of(ButtonStyle.PRIMARY,"tcmto もえにょ", "もえにょ")).queue();
 		}
 
 	}

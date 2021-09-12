@@ -42,6 +42,30 @@ public class MessageEvent extends ListenerAdapter {
 			}
 		}
 		
+		//通知ボタン
+		if (event.getComponentId().startsWith("tcmto")) {
+			MessageChannel mtChannel = null;
+			for (GuildChannel c : event.getGuild().getChannels()) {
+				if (c.getName().contains("レアキャラ報告")) {
+					mtChannel = (MessageChannel) c;
+				}
+			}
+			
+			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.他鯖超激レア報告OK);
+			Role role = event.getGuild().getRoleById(roleId);
+
+			if (mtChannel != null && role != null) {
+				
+				
+				String servername = event.getComponentId().split(" ")[1];
+				mtChannel.sendMessage(role.getAsMention() +"：" + servername + "\n"
+						+ "> 通知した人：<@" + event.getMember().getId() + ">").queue();
+				
+				event.getMessage().delete().queue();
+				event.getChannel().sendMessage("通知完了：" + servername).queue();
+			}
+		}
+		
 		//発言不可解除ボタン
 		if(event.getComponentId().equals("removeRole")) {
 			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.発言不可);
