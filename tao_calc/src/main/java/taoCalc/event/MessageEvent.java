@@ -1,5 +1,8 @@
 package taoCalc.event;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -152,15 +155,31 @@ public class MessageEvent extends ListenerAdapter {
 		if (calcInfo == null) {
 			calcInfo = new CalcInfo();
 		}
-
+		
+		Pattern expP = Pattern.compile("<@" + userId + ">は(.*)EXP");
+		String exp = "";
+		if(embed.getDescription().contains("倒した")) {
+			Matcher expM = expP.matcher(embed.getDescription());
+			if(expM.find()) {
+				exp = expM.group(1).substring(2);
+			}
+		}
+		
+		calcInfo.addExp(Double.parseDouble(exp.replaceAll(",", "")));
+		
 		boolean isMateria = false;
 		boolean isBukikon = false;
+		boolean isWeapon = false;
 		for (Field f : embed.getFields()) {
+			
 			if (f.getValue().contains("[素材]")) {
 				isMateria = true;
 			}
 			if (f.getValue().contains("武器魂")) {
 				isBukikon = true;
+			}
+			if(f.getValue().contains("[武器]")) {
+				isWeapon = true;
 			}
 		}
 		calcInfo.addBattleCount();
@@ -171,6 +190,10 @@ public class MessageEvent extends ListenerAdapter {
 
 		if (isBukikon) {
 			calcInfo.addBukikonCount();
+		}
+		
+		if (isWeapon) {
+			calcInfo.addWeaponCount();
 		}
 
 		Calcmanager.setData(userId, calcInfo);

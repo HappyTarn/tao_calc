@@ -4,6 +4,8 @@ import java.text.NumberFormat;
 
 public class CalcInfo {
 
+	private Double exp = 0D;
+
 	private Integer one = 0;
 	private Integer two = 0;
 
@@ -12,13 +14,19 @@ public class CalcInfo {
 
 	private Integer bukikonCount = 0;
 
+	private Integer weaponCount = 0;
+
 	private Double max = Double.MIN_VALUE;
 	private Double min = Double.MAX_VALUE;
-	
+
 	private Double critical = 0D;
-	
+
+	public void addExp(Double d) {
+		exp = exp + d;
+	}
+
 	public void addCritical(Double d) {
-		if(d > critical) {
+		if (d > critical) {
 			critical = d;
 		}
 	}
@@ -48,6 +56,11 @@ public class CalcInfo {
 		this.min = min;
 	}
 
+	public String getExpString() {
+		NumberFormat nfNum = NumberFormat.getNumberInstance();
+		return nfNum.format(exp);
+	}
+
 	public String getMaxString() {
 		NumberFormat nfNum = NumberFormat.getNumberInstance();
 		return nfNum.format(max);
@@ -57,7 +70,7 @@ public class CalcInfo {
 		NumberFormat nfNum = NumberFormat.getNumberInstance();
 		return nfNum.format(min);
 	}
-	
+
 	public String getCriString() {
 		NumberFormat nfNum = NumberFormat.getNumberInstance();
 		return nfNum.format(critical);
@@ -69,6 +82,10 @@ public class CalcInfo {
 
 	public void addMateriaCount() {
 		materiaCount++;
+	}
+
+	public void addWeaponCount() {
+		weaponCount++;
 	}
 
 	public String get素材割合() {
@@ -97,6 +114,19 @@ public class CalcInfo {
 			return battleCount + "(" + bukikonCount + ")：0％\n";
 		} else {
 			return battleCount + "(" + bukikonCount + ")：" + ((float) bukikonCount / (float) battleCount * 100) + "％\n";
+		}
+
+	}
+	
+	public String get武器割合() {
+		if (weaponCount == 0) {
+			return "データがないよ";
+		}
+
+		if (this.weaponCount == 0) {
+			return battleCount + "(" + weaponCount + ")：0％\n";
+		} else {
+			return battleCount + "(" + weaponCount + ")：" + ((float) weaponCount / (float) battleCount * 100) + "％\n";
 		}
 
 	}

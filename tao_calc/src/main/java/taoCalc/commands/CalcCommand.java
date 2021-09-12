@@ -44,8 +44,12 @@ public class CalcCommand extends Command {
 			eb.addField("貫通割合", calcInfo.get貫通割合(), false);
 
 			eb.addField("素材割合", calcInfo.get素材割合(), false);
+			
+			eb.addField("武器割合", calcInfo.get武器割合(), false);
 
 			eb.addField("武器魂割合", calcInfo.get武器魂割合(), false);
+			
+			eb.addField("取得経験値", calcInfo.getExpString(), false);
 			
 			eb.setFooter("このデータはbotの再起動でリセット");
 
