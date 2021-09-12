@@ -11,8 +11,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import taoCalc.CalcManager;
 import taoCalc.Const;
+import taoCalc.RankMessageManager;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.CalcInfo;
 import taoCalc.util.Utility;
@@ -74,6 +77,20 @@ public class MessageEvent extends ListenerAdapter {
 			} else {
 				event.getChannel().sendMessage("発言不可解除失敗！管理者に外してもらって！");
 			}
+		}
+
+		//ランクのアンドロイド表示
+		if (event.getComponentId().startsWith("rviewa")) {
+			RankMessageManager rankMessageManager = RankMessageManager.getINSTANCE();
+			MessageEmbed embed = rankMessageManager.getRankMessage(event.getComponentId().split(" ")[1]).getEmbeds().get(0);
+
+			EmbedBuilder eb = new EmbedBuilder(embed);
+
+			eb.setDescription(embed.getDescription().replaceAll("\\(<\\('', ''\\)>\\)", ""));
+
+			
+			event.getMessage().delete().queue();
+			event.getChannel().sendMessage(eb.build()).queue();
 		}
 
 		//キャンセル
@@ -219,7 +236,7 @@ public class MessageEvent extends ListenerAdapter {
 	}
 
 	/**
-	 * rmapの集計
+	 * rank の表示
 	 * @param event
 	 */
 	public void rankCalc(MessageUpdateEvent event) {
@@ -232,25 +249,26 @@ public class MessageEvent extends ListenerAdapter {
 			return;
 		}
 
-		if (!event.getMessage().getReferencedMessage().getContentRaw().endsWith("a")) {
-			return;
-		}
-
 		if (event.getMessage().getEmbeds() != null && event.getMessage().getEmbeds().isEmpty()) {
 			return;
 		}
 
-		if (!event.getMessage().getContentRaw().contains("見たいページを発言してください")) {
+		if (!event.getMessage().getContentRaw().contains("処理を終了させました")) {
 			return;
 		}
 
-		MessageEmbed embed = event.getMessage().getEmbeds().get(0);
+		boolean isServer = false;
+		if (event.getMessage().getEmbeds().get(0).getAuthor() != null
+				&& event.getMessage().getEmbeds().get(0).getAuthor().getName().contains("サーバー")) {
+			isServer = true;
+		}
 
-		EmbedBuilder eb = new EmbedBuilder(embed);
-
-		eb.setDescription(embed.getDescription().replaceAll("\\(<\\('', ''\\)>\\)", ""));
-
-		event.getMessage().reply(eb.build()).queue();
+		if (isServer) {
+			RankMessageManager rankMessageManager = RankMessageManager.getINSTANCE();
+			rankMessageManager.setRankMessage(event.getMessage());
+			event.getMessage().reply("Androidで見れる表示にしますか？").setActionRow(Button.of(ButtonStyle.PRIMARY, "rviewa " + event.getMessage().getId(), "表示"),
+					Button.of(ButtonStyle.DANGER, "cancel", "キャンセル")).queue();
+		}
 
 	}
 }
