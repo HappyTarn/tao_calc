@@ -20,7 +20,7 @@ import taoCalc.util.Utility;
 public class MessageEvent extends ListenerAdapter {
 
 	public void onButtonClick(ButtonClickEvent event) {
-		
+
 		//通知ボタン
 		if (event.getComponentId().equals("tcmt")) {
 			MessageChannel mtChannel = null;
@@ -29,19 +29,19 @@ public class MessageEvent extends ListenerAdapter {
 					mtChannel = (MessageChannel) c;
 				}
 			}
-			
+
 			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.超激レア報告OK);
 			Role role = event.getGuild().getRoleById(roleId);
 
 			if (mtChannel != null && role != null) {
 
-				mtChannel.sendMessage(role.getAsMention() +"：<#" + event.getChannel().getId() + "> で超激レアが出たよ！\n"
+				mtChannel.sendMessage(role.getAsMention() + "：<#" + event.getChannel().getId() + "> で超激レアが出たよ！\n"
 						+ "> 通知した人：<@" + event.getMember().getId() + ">").queue();
-				
+
 				event.editButton(event.getButton().asDisabled()).queue();
 			}
 		}
-		
+
 		//通知ボタン
 		if (event.getComponentId().startsWith("tcmto")) {
 			MessageChannel mtChannel = null;
@@ -50,24 +50,23 @@ public class MessageEvent extends ListenerAdapter {
 					mtChannel = (MessageChannel) c;
 				}
 			}
-			
+
 			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.他鯖超激レア報告OK);
 			Role role = event.getGuild().getRoleById(roleId);
 
 			if (mtChannel != null && role != null) {
-				
-				
+
 				String servername = event.getComponentId().split(" ")[1];
-				mtChannel.sendMessage(role.getAsMention() +"：" + servername + "\n"
+				mtChannel.sendMessage(role.getAsMention() + "：" + servername + "\n"
 						+ "> 通知した人：<@" + event.getMember().getId() + ">").queue();
-				
+
 				event.getMessage().delete().queue();
 				event.getChannel().sendMessage("通知完了：" + servername).queue();
 			}
 		}
-		
+
 		//発言不可解除ボタン
-		if(event.getComponentId().equals("removeRole")) {
+		if (event.getComponentId().equals("removeRole")) {
 			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.発言不可);
 			Role role = event.getGuild().getRoleById(roleId);
 			if (role != null) {
@@ -75,6 +74,11 @@ public class MessageEvent extends ListenerAdapter {
 			} else {
 				event.getChannel().sendMessage("発言不可解除失敗！管理者に外してもらって！");
 			}
+		}
+
+		//キャンセル
+		if (event.getComponentId().equals("cancel")) {
+			event.getMessage().delete().queue();
 		}
 	}
 

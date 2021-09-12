@@ -44,10 +44,11 @@ public class MtoCommand extends Command {
 				if(event.getGuild().getId().equals("823574484660518932")) {
 					EmbedBuilder eb = new EmbedBuilder();
 					eb.setTitle("どこで出た？");
-					event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.PRIMARY,"tcmto 1", "公式"),
-							Button.of(ButtonStyle.PRIMARY,"tcmto 2", "DW"),
-							Button.of(ButtonStyle.PRIMARY,"tcmto 3", "KING"),
-							Button.of(ButtonStyle.PRIMARY,"tcmto 4", "もえにょ")).queue();
+					event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.PRIMARY,"tcmto 公式", "公式"),
+							Button.of(ButtonStyle.PRIMARY,"tcmto DW", "DW"),
+							Button.of(ButtonStyle.PRIMARY,"tcmto KING", "KING"),
+							Button.of(ButtonStyle.PRIMARY,"tcmto もえにょ", "もえにょ"),
+							Button.of(ButtonStyle.DANGER,"cancel", "キャンセル")).queue();
 				}else {
 					event.getChannel().sendMessage("tc:mto <どこの鯖>\nどこの鯖で超激でたか書いてね！").queue();
 				}
