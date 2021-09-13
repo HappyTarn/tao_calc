@@ -73,6 +73,7 @@ public class MessageEvent extends ListenerAdapter {
 
 		//発言不可解除ボタン
 		if (event.getComponentId().equals("removeRole")) {
+			event.editMessage(event.getMessage()).queue();
 			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.発言不可);
 			Role role = event.getGuild().getRoleById(roleId);
 			if (role != null) {

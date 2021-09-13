@@ -40,6 +40,41 @@ public class CalcInfo {
 		}
 	}
 
+	public void addBattleCount() {
+		battleCount++;
+	}
+
+	public void addMateriaCount() {
+		materiaCount++;
+	}
+
+	public void addWeaponCount() {
+		weaponCount++;
+	}
+
+	public Integer getOne() {
+		return one;
+	}
+
+	public void setOne(Integer one) {
+		this.one = one;
+	}
+
+	public Integer getTwo() {
+		return two;
+	}
+
+	public void setTwo(Integer two) {
+		this.two = two;
+	}
+
+	public void addOne() {
+		this.one++;
+	}
+
+	public void addTwo() {
+		this.two++;
+	}
 	public Double getMax() {
 		return max;
 	}
@@ -74,18 +109,6 @@ public class CalcInfo {
 	public String getCriString() {
 		NumberFormat nfNum = NumberFormat.getNumberInstance();
 		return nfNum.format(critical);
-	}
-
-	public void addBattleCount() {
-		battleCount++;
-	}
-
-	public void addMateriaCount() {
-		materiaCount++;
-	}
-
-	public void addWeaponCount() {
-		weaponCount++;
 	}
 
 	public String get素材割合() {
@@ -131,29 +154,6 @@ public class CalcInfo {
 
 	}
 
-	public Integer getOne() {
-		return one;
-	}
-
-	public void setOne(Integer one) {
-		this.one = one;
-	}
-
-	public Integer getTwo() {
-		return two;
-	}
-
-	public void setTwo(Integer two) {
-		this.two = two;
-	}
-
-	public void addOne() {
-		this.one++;
-	}
-
-	public void addTwo() {
-		this.two++;
-	}
 
 	public String get貫通割合() {
 		Integer total = this.one + this.two;
