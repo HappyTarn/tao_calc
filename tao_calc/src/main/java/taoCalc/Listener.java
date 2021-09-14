@@ -48,10 +48,6 @@ public class Listener extends ListenerAdapter {
 	public void onReady(ReadyEvent event) {
 		bot.getThreadpool().scheduleWithFixedDelay(() -> {
 			for (Guild guild : event.getJDA().getGuilds()) {
-				if (Sqlite.countSqliteMasterByTableName(guild.getId(), "server_info") == 0) {
-					Sqlite.executeSql(guild.getId(), "create table server_info(exp_info_channel TEXT)");
-					Sqlite.executeSql(guild.getId(), "insert into server_info(exp_info_channel) values('')");
-				}
 				ArrayList<HashMap<String, String>> serverInfo = Sqlite.getMapExecuteSql(guild.getId(),
 						"select * from server_info");
 				if (!serverInfo.isEmpty() && !serverInfo.get(0).get("exp_info_channel").isEmpty()) {
