@@ -57,6 +57,8 @@ public class Listener extends ListenerAdapter {
 				if (!serverInfo.isEmpty() && !serverInfo.get(0).get("exp_info_channel").isEmpty()) {
 					String expInfoChannel = serverInfo.get(0).get("exp_info_channel");
 
+					System.out.println("ギルドID：" + guild.getId());
+					System.out.println("ギルド名：" + guild.getName());
 					EmbedBuilder eb = new EmbedBuilder();
 					eb.setTitle("保有経験値");
 					List<Member> memberList = Sqlite.selectMemberOrderByExpDesc(guild.getId());
@@ -81,7 +83,7 @@ public class Listener extends ListenerAdapter {
 					guild.getTextChannelById(expInfoChannel).sendMessage(eb.build()).queue();
 				}
 			}
-		}, 0, 15, TimeUnit.MINUTES);
+		}, 0, 60, TimeUnit.MINUTES);
 	}
 
 	@Override
