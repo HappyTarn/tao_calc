@@ -135,10 +135,10 @@ public class Utility {
 	}
 	
 	public static boolean checkDate(String strDate) {
-	    if (strDate == null || strDate.length() != 10) {
+	    if (strDate == null || strDate.length() != 8) {
 	        return false;
 	    }
-	    strDate = strDate.replace('-', '/');
+	    strDate = strDate.substring(0, 4) + "/" + strDate.substring(4,6) + "/" + strDate.substring(6, 8);
 	    DateFormat format = DateFormat.getDateInstance();
 	    // 日付/時刻解析を厳密に行うかどうかを設定する。
 	    format.setLenient(false);

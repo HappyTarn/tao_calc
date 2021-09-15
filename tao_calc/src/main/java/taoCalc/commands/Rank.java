@@ -30,16 +30,23 @@ public class Rank extends Command {
 		} else {
 			kbn = event.getArgs().split(" ")[0];
 		}
-		if (kbn.isEmpty() || !"d".equals(kbn.toLowerCase()) || !"m".equals(kbn.toLowerCase()) || Utility.checkDate(kbn)) {
-			event.getMessage().reply("ランキングにはこの検索機能はないようだ。");
+		if (kbn.isEmpty()) {
+			event.getMessage().reply("ランキングにはこの検索機能はないようだ。").queue();
+			return;
 		}
-
-		EmbedBuilder eb = new EmbedBuilder();
-		eb.setTitle("区分を選択してください");
-		event.getMessage().reply(eb.build())
-				.setActionRow(Button.of(ButtonStyle.SUCCESS, "rank_this_" + kbn, event.getGuild().getName()),
-						Button.of(ButtonStyle.SUCCESS, "rank_all_" + kbn, "全体"))
-				.queue();
+		if ("d".equals(kbn.toLowerCase()) || "m".equals(kbn.toLowerCase()) || Utility.checkDate(kbn)) {
+			
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setTitle("区分を選択してください");
+			event.getMessage().reply(eb.build())
+			.setActionRow(Button.of(ButtonStyle.SUCCESS, "rank_this_" + kbn, event.getGuild().getName()),
+					Button.of(ButtonStyle.SUCCESS, "rank_all_" + kbn, "全体"),
+					Button.of(ButtonStyle.DANGER, "cancel", "キャンセル"))
+			.queue();
+		}else {
+			event.getMessage().reply("ランキングにはこの検索機能はないようだ。").queue();
+			return;
+		}
 	}
 
 }
