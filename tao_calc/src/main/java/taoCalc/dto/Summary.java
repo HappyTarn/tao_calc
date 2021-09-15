@@ -17,6 +17,8 @@ public class Summary {
 	private Double weaponCount = 0D;
 
 	private Double bukikonCount = 0D;
+	
+	private Double banCount = 0D;
 
 	public String getGuildId() {
 		return guildId;
@@ -80,6 +82,14 @@ public class Summary {
 
 	public void setBukikonCount(Double bukikonCount) {
 		this.bukikonCount = bukikonCount;
+	}
+
+	public Double getBanCount() {
+		return banCount;
+	}
+
+	public void setBanCount(Double banCount) {
+		this.banCount = banCount;
 	}
 
 }

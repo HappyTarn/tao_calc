@@ -47,7 +47,7 @@ public class AmmountEvent extends MessageEvent {
 
 		Boolean isWrite = PermissionUtil.checkPermission(
 				event.getGuild().getTextChannelById(event.getChannel().getId()), event.getGuild().getSelfMember(),
-				Permission.MESSAGE_WRITE);
+				Permission.MESSAGE_WRITE,Permission.MESSAGE_EMBED_LINKS);
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
 		// お試し
