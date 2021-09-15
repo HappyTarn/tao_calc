@@ -16,12 +16,15 @@
 package taoCalc;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
@@ -80,6 +83,27 @@ public class Listener extends ListenerAdapter {
 				}
 			}
 		}, 0, 60, TimeUnit.MINUTES);
+		
+		bot.getThreadpool().scheduleWithFixedDelay(() -> {
+			for (Guild guild : event.getJDA().getGuilds()) {
+				if(guild.getId().equals("823574484660518932")) {
+					TextChannel channnel = guild.getTextChannelById("833683675345977416");
+					ChannelManager channelManager = ChannelManager.getINSTANCE();
+					Calendar calendar = Calendar.getInstance();
+					Date date = channelManager.getDate("833683675345977416");
+					if(date == null) {
+						return;
+					}
+					calendar.setTime(date);
+					calendar.add(Calendar.MINUTE, 3);
+					
+					Date now = new Date();
+					if(now.after(calendar.getTime())) {
+						channnel.sendMessage("<@&850863982465384459> 回せ！").queue();
+					}
+				}
+			}
+		}, 0, 1, TimeUnit.MINUTES);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package taoCalc.event;
 
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +18,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import taoCalc.CalcManager;
+import taoCalc.ChannelManager;
 import taoCalc.Const;
 import taoCalc.RankMessageManager;
 import taoCalc.db.Sqlite;
@@ -29,6 +31,12 @@ public class MessageEvent extends ListenerAdapter {
 
 		//通知ボタン
 		if (event.getComponentId().equals("tcmt")) {
+			for(Button b :event.getMessage().getButtons()) {
+				if(b.isDisabled()) {
+					event.editMessage(event.getMessage()).queue();
+					return;
+				}
+			}
 			MessageChannel mtChannel = null;
 			for (GuildChannel c : event.getGuild().getChannels()) {
 				if (c.getName().contains("レアキャラ報告")) {
@@ -46,6 +54,16 @@ public class MessageEvent extends ListenerAdapter {
 
 				event.editButton(event.getButton().asDisabled()).queue();
 			}
+		}
+		
+		if(event.getComponentId().equals("tcmt_no")) {
+			for(Button b :event.getMessage().getButtons()) {
+				if(b.isDisabled()) {
+					event.editMessage(event.getMessage()).queue();
+					return;
+				}
+			}
+			event.editButton(event.getButton().asDisabled()).queue();
 		}
 
 		//通知ボタン
@@ -113,6 +131,9 @@ public class MessageEvent extends ListenerAdapter {
 		rmapCalc(event);
 
 		materiaCalc(event);
+		
+		ChannelManager channelManager = ChannelManager.getINSTANCE();
+		channelManager.setData(event.getChannel().getId(), new Date());
 
 	}
 
