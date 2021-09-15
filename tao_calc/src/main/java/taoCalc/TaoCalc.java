@@ -28,6 +28,9 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import taoCalc.commands.AddExpCommand;
 import taoCalc.commands.CalcCommand;
 import taoCalc.commands.ChangeExpCommand;
@@ -38,6 +41,7 @@ import taoCalc.commands.MtoCommand;
 import taoCalc.commands.PingCommand;
 import taoCalc.commands.PlayCommand;
 import taoCalc.commands.Private;
+import taoCalc.commands.Rank;
 import taoCalc.commands.SetExpInfoChannelCommand;
 import taoCalc.commands.SetPrizeInfoChannelCommand;
 import taoCalc.commands.SetRoleCommand;
@@ -77,7 +81,7 @@ public class TaoCalc {
 
 		// the second is the bot's owner's id
 		String ownerId = list.get(1);
-		
+
 		Bot bot = new Bot(eventWaiter);
 
 		// define a command client
@@ -121,8 +125,8 @@ public class TaoCalc {
 				new MtCommand(),
 				new MtoCommand(),
 				new Private(),
+				new Rank(),
 				new AddExpCommand());
-		
 
 		// start getting a bot account set up
 		JDABuilder.createDefault(token)
@@ -132,8 +136,11 @@ public class TaoCalc {
 				.setActivity(Activity.playing("loading..."))
 
 				// add the listeners
-				.addEventListeners(eventWaiter, client.build(), new MessageEvent(),new Listener(bot))
+				.addEventListeners(eventWaiter, client.build(), new MessageEvent(), new Listener(bot))
 
+				.setChunkingFilter(ChunkingFilter.ALL) // enable member chunking for all guilds
+				.setMemberCachePolicy(MemberCachePolicy.ALL) // ignored if chunking enabled
+				.enableIntents(GatewayIntent.GUILD_MEMBERS)
 				// start it up!
 				.build();
 	}

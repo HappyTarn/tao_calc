@@ -19,6 +19,7 @@ import taoCalc.dto.MonsterRate;
 import taoCalc.dto.PetInfo;
 import taoCalc.dto.PrizeMoneyInfo;
 import taoCalc.dto.Rate;
+import taoCalc.dto.Summary;
 
 public class Sqlite {
 
@@ -87,7 +88,7 @@ public class Sqlite {
 							"super_rare2=" + member.get超激レア() + "," +
 							"saba_limit=" + member.get鯖限() + "," +
 							"tohru=" + member.getTohru() +
-							",update_date=datetime('now', '+9 hours')"+
+							",update_date=datetime('now', '+9 hours')" +
 							" where id='" + member.getId() + "'");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -155,18 +156,85 @@ public class Sqlite {
 		}
 	}
 
-	public static List<Member> selectMemberOrderByExpDesc(String guildId) {
+	public static void insertSummary(Summary summary) {
 		Connection connection = null;
 		Statement statement = null;
-		List<Member> result = new ArrayList<Member>();
 		try {
 			Class.forName("org.sqlite.JDBC");
 
-			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			connection = DriverManager.getConnection("jdbc:sqlite:db/common.db");
 			statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("select * from member where exp <> '0' order by cast(exp as Integer) desc");
+			statement.execute(
+					"insert into summary("
+							+ "guild_id,"
+							+ "member_id,"
+							+ "combat_count,"
+							+ "ground_count,"
+							+ "exp,"
+							+ "sozai_count,"
+							+ "weapon_count,"
+							+ "bukikon_count,"
+							+ "create_date"
+							+ ") values('"
+							+ summary.getGuildId() + "',"
+							+ summary.getMemberId() + ","
+							+ summary.getCombatCount() + ","
+							+ summary.getGroundCount() + ","
+							+ summary.getExp() + ","
+							+ summary.getSozaiCount() + ","
+							+ summary.getWeaponCount() + ","
+							+ summary.getBukikonCount() + ","
+							+ "datetime('now', '+9 hours'))");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static List<Summary> selectSummaryOrderByExample(String order,String where) {
+		Connection connection = null;
+		Statement statement = null;
+		List<Summary> result = new ArrayList<Summary>();
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/common.db");
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("select "
+					+ "member_id,"
+					+ "sum(combat_count) as combat_count,"
+					+ "sum(ground_count) as ground_count,"
+					+ "sum(exp) as exp,"
+					+ "sum(sozai_count) as sozai_count,"
+					+ "sum(weapon_count) as weapon_count,"
+					+ "sum(bukikon_count) as bukikon_count"
+					+ " from summary "+where+" group by member_id order by " + order + " desc");
 			while (rs.next()) {
-				result.add(new Member(rs.getString("id"), Long.parseLong(rs.getString("exp")),rs.getString("update_date")));
+				Summary summary = new Summary();
+				summary.setMemberId(rs.getString("member_id"));
+				summary.setCombatCount(rs.getDouble("combat_count"));
+				summary.setGroundCount(rs.getDouble("ground_count"));
+				summary.setExp(rs.getDouble("exp"));
+				summary.setSozaiCount(rs.getDouble("sozai_count"));
+				summary.setWeaponCount(rs.getDouble("weapon_count"));
+				summary.setBukikonCount(rs.getDouble("bukikon_count"));
+				result.add(summary);
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -190,7 +258,45 @@ public class Sqlite {
 		}
 		return result;
 	}
-	
+
+	public static List<Member> selectMemberOrderByExpDesc(String guildId) {
+		Connection connection = null;
+		Statement statement = null;
+		List<Member> result = new ArrayList<Member>();
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			ResultSet rs = statement
+					.executeQuery("select * from member where exp <> '0' order by cast(exp as Integer) desc");
+			while (rs.next()) {
+				result.add(new Member(rs.getString("id"), Long.parseLong(rs.getString("exp")),
+						rs.getString("update_date")));
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
 	public static List<Member> selectMemberOrderBySubjugation(String guildId) {
 		Connection connection = null;
 		Statement statement = null;
@@ -200,8 +306,9 @@ public class Sqlite {
 
 			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
 			statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("select id,(normal+weak_enemy+strong_enemy+super_strong_enemy+series+rare+super_rare+super_rare2+saba_limit+tohru) as sum "
-					+ "from member order by cast((normal+weak_enemy+strong_enemy+super_strong_enemy+series+rare+super_rare+super_rare2+saba_limit+tohru) as Integer) desc");
+			ResultSet rs = statement.executeQuery(
+					"select id,(normal+weak_enemy+strong_enemy+super_strong_enemy+series+rare+super_rare+super_rare2+saba_limit+tohru) as sum "
+							+ "from member order by cast((normal+weak_enemy+strong_enemy+super_strong_enemy+series+rare+super_rare+super_rare2+saba_limit+tohru) as Integer) desc");
 			while (rs.next()) {
 				Member m = new Member(rs.getString("id"));
 				m.set合計(Long.parseLong(rs.getString("sum")));
@@ -509,7 +616,7 @@ public class Sqlite {
 			statement.execute(sql);
 			sql = "insert into role(role1,role2,role3,role4,role5) values('','','','','')";
 			statement.execute(sql);
-			
+
 			sql = "create table server_info(exp_info_channel TEXT, prize_info_channel TEXT)";
 			statement.execute(sql);
 			sql = "insert into server_info(exp_info_channel,prize_info_channel) values('','')";
@@ -517,14 +624,12 @@ public class Sqlite {
 
 			sql = "create table pet_info(id,n_count INTEGER,r_count INTEGER,sr_count INTEGER,u_count INTEGER,mmo_count INTEGER,tao_count INTEGER)";
 			statement.execute(sql);
-			
+
 			sql = "create table monster_rate_info(name,amount)";
 			statement.execute(sql);
 
 			sql = "create table prize_money_info(name,exp)";
 			statement.execute(sql);
-			
-			
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -599,11 +704,11 @@ public class Sqlite {
 			ResultSet rs = statement.executeQuery(sql);
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int rscnt = rsmd.getColumnCount();
-			
+
 			while (rs.next()) {
 				//1件分のデータ(連想配列)
 				ArrayList<String> hdata = new ArrayList<String>();
-				if(list.size() == 0) {
+				if (list.size() == 0) {
 					for (int i = 1; i <= rscnt; i++) {
 						//フィールド名
 						String field = rsmd.getColumnName(i);

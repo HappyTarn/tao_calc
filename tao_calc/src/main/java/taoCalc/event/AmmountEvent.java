@@ -27,6 +27,7 @@ import taoCalc.dto.Member;
 import taoCalc.dto.MonsterRate;
 import taoCalc.dto.PrizeMoneyInfo;
 import taoCalc.dto.Rate;
+import taoCalc.dto.Summary;
 import taoCalc.util.Utility;
 
 public class AmmountEvent extends MessageEvent {
@@ -304,10 +305,6 @@ public class AmmountEvent extends MessageEvent {
 
 		//イン堀対応
 
-		if (event.getGuild().getId().equals("838732784305569792")) {
-			return;
-		}
-
 		List<String> inhoriList = new ArrayList<String>();
 		if (event.getMessage() != null && !event.getMessage().getContentRaw().isEmpty()) {
 			Pattern p1 = Pattern.compile(
@@ -343,6 +340,14 @@ public class AmmountEvent extends MessageEvent {
 					if (calcInfo != null) {
 						calcInfo.addOne();
 						Calcmanager.setData(memberId, calcInfo);
+						Summary summary = new Summary();
+						summary.setGuildId(event.getGuild().getId());
+						summary.setMemberId(memberId);
+						summary.setGroundCount(1D);
+						Sqlite.insertSummary(summary);
+					}
+					if (event.getGuild().getId().equals("838732784305569792")) {
+						return;
 					}
 					Rate rate = null;
 					if (Utility.getRank(inhoriList.get(0), inhoriList.get(1)) != null) {
@@ -363,6 +368,14 @@ public class AmmountEvent extends MessageEvent {
 					if (calcInfo != null) {
 						calcInfo.addTwo();
 						Calcmanager.setData(memberId, calcInfo);
+						Summary summary = new Summary();
+						summary.setGuildId(event.getGuild().getId());
+						summary.setMemberId(memberId);
+						summary.setGroundCount(2D);
+						Sqlite.insertSummary(summary);
+					}
+					if (event.getGuild().getId().equals("838732784305569792")) {
+						return;
 					}
 					Rate rate = null;
 					if (Utility.getRank(inhoriList.get(0), inhoriList.get(1)) != null) {

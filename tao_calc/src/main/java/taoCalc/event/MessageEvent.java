@@ -1,6 +1,10 @@
 package taoCalc.event;
 
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,11 +14,13 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import taoCalc.CalcManager;
@@ -23,6 +29,7 @@ import taoCalc.Const;
 import taoCalc.RankMessageManager;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.CalcInfo;
+import taoCalc.dto.Summary;
 import taoCalc.util.Utility;
 
 public class MessageEvent extends ListenerAdapter {
@@ -31,8 +38,8 @@ public class MessageEvent extends ListenerAdapter {
 
 		//通知ボタン
 		if (event.getComponentId().equals("tcmt")) {
-			for(Button b :event.getMessage().getButtons()) {
-				if(b.isDisabled()) {
+			for (Button b : event.getMessage().getButtons()) {
+				if (b.isDisabled()) {
 					event.editMessage(event.getMessage()).queue();
 					return;
 				}
@@ -55,10 +62,10 @@ public class MessageEvent extends ListenerAdapter {
 				event.editButton(event.getButton().asDisabled()).queue();
 			}
 		}
-		
-		if(event.getComponentId().equals("tcmt_no")) {
-			for(Button b :event.getMessage().getButtons()) {
-				if(b.isDisabled()) {
+
+		if (event.getComponentId().equals("tcmt_no")) {
+			for (Button b : event.getMessage().getButtons()) {
+				if (b.isDisabled()) {
 					event.editMessage(event.getMessage()).queue();
 					return;
 				}
@@ -104,13 +111,13 @@ public class MessageEvent extends ListenerAdapter {
 		//ランクのアンドロイド表示
 		if (event.getComponentId().startsWith("rviewa")) {
 			RankMessageManager rankMessageManager = RankMessageManager.getINSTANCE();
-			MessageEmbed embed = rankMessageManager.getRankMessage(event.getComponentId().split(" ")[1]).getEmbeds().get(0);
+			MessageEmbed embed = rankMessageManager.getRankMessage(event.getComponentId().split(" ")[1]).getEmbeds()
+					.get(0);
 
 			EmbedBuilder eb = new EmbedBuilder(embed);
 
 			eb.setDescription(embed.getDescription().replaceAll("\\(<\\('', ''\\)>\\)", ""));
 
-			
 			event.getMessage().delete().queue();
 			event.getChannel().sendMessage(eb.build()).queue();
 		}
@@ -119,6 +126,481 @@ public class MessageEvent extends ListenerAdapter {
 		if (event.getComponentId().equals("cancel")) {
 			event.getMessage().delete().queue();
 		}
+		//キャンセル
+		if (event.getComponentId().equals("end")) {
+			event.editMessage(event.getMessage()).setActionRows().queue();
+		}
+
+		rankButtonEvent(event);
+	}
+
+	private void rankButtonEvent(ButtonClickEvent event) {
+		Date date = new Date(); // 今日の日付
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String strDate = dateFormat.format(date);
+		String strFirstDate = dateFormat.format(Utility.getFirstDate(date));
+		//この鯖
+		if (event.getComponentId().equals("rank_this_d") || event.getComponentId().equals("rank_this_m")
+				|| event.getComponentId().startsWith("rank_this_2")) {
+			//			for (Button b : event.getMessage().getButtons()) {
+			//				if (b.isDisabled()) {
+			//					event.editMessage(event.getMessage()).queue();
+			//					return;
+			//				}
+			//			}
+			//			
+			//			event.editButton(event.getButton().asDisabled()).queue();
+			event.getMessage().delete().queue();
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setTitle(event.getGuild().getName() + "ランキング");
+
+			event.getChannel().sendMessage(eb.build()).setActionRows(
+					ActionRow.of(Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_combat", "討伐"),
+							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_ground", "地上げ")),
+					ActionRow.of(Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_exp", "経験値獲得"),
+							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_sozai", "素材獲得"),
+							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_weapon", "武器獲得"),
+							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_bukikon", "武器魂獲得")))
+					.queue();
+		}
+		if (event.getComponentId().startsWith("rank_this_") &&( event.getComponentId().endsWith("_combat") || event.getComponentId().endsWith("_ground")
+				|| event.getComponentId().endsWith("_exp") || event.getComponentId().endsWith("_sozai")
+				|| event.getComponentId().endsWith("_weapon") || event.getComponentId().endsWith("_bukikon"))) {
+			for (Button b : event.getMessage().getButtons()) {
+				if (b.isDisabled()) {
+					event.editMessage(event.getMessage()).queue();
+					return;
+				}
+			}
+			event.editButton(event.getButton().asDisabled()).queue();
+			EmbedBuilder eb = new EmbedBuilder();
+			NumberFormat nfNum = NumberFormat.getNumberInstance();
+
+			List<Summary> list = new ArrayList<Summary>();
+			String rankingName = "";
+			int count = 1;
+			String command = event.getComponentId().replace("rank_this_", "");
+			if (command.endsWith("combat")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("combat_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("combat_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("combat_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "討伐数ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getCombatCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("ground")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("ground_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("ground_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("ground_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "地上げランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getGroundCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("exp")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("exp",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("exp",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("exp",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "経験値獲得ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("sozai")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("sozai_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("sozai_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("sozai_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "素材獲得ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getSozaiCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("weapon")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("weapon_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("weapon_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("weapon_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "武器獲得ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("bukikon")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
+							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "武器魂獲得ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBukikonCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			}
+		}
+
+		/**
+		 * 全体
+		 */
+		if (event.getComponentId().equals("rank_all_d") || event.getComponentId().equals("rank_all_m")
+				|| event.getComponentId().startsWith("rank_all_2")) {
+			//			for (Button b : event.getMessage().getButtons()) {
+			//				if (b.isDisabled()) {
+			//					event.editMessage(event.getMessage()).queue();
+			//					return;
+			//				}
+			//			}
+			//			
+			//			event.editButton(event.getButton().asDisabled()).queue();
+			event.getMessage().delete().queue();
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setTitle("導入鯖全体ランキング");
+
+			event.getChannel().sendMessage(eb.build()).setActionRows(
+					ActionRow.of(Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_combat", "討伐"),
+							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_ground", "地上げ")),
+					ActionRow.of(Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_exp", "経験値獲得"),
+							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_sozai", "素材獲得"),
+							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_weapon", "武器獲得"),
+							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_bukikon", "武器魂獲得")))
+					.queue();
+		}
+		if (event.getComponentId().startsWith("rank_all_") &&( event.getComponentId().endsWith("_combat") || event.getComponentId().endsWith("_ground")
+				|| event.getComponentId().endsWith("_exp") || event.getComponentId().endsWith("_sozai")
+				|| event.getComponentId().endsWith("_weapon") || event.getComponentId().endsWith("_bukikon"))) {
+			for (Button b : event.getMessage().getButtons()) {
+				if (b.isDisabled()) {
+					event.editMessage(event.getMessage()).queue();
+					return;
+				}
+			}
+			event.editButton(event.getButton().asDisabled()).queue();
+			EmbedBuilder eb = new EmbedBuilder();
+			NumberFormat nfNum = NumberFormat.getNumberInstance();
+
+			List<Summary> list = new ArrayList<Summary>();
+			String rankingName = "";
+			int count = 1;
+			String command = event.getComponentId().replace("rank_all_", "");
+			if (command.endsWith("combat")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("combat_count",
+							"where create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("combat_count",
+							"where create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("combat_count",
+							"where create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "討伐数ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getCombatCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("ground")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("ground_count",
+							"where create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("ground_count",
+							"where create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("ground_count",
+							"where create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "地上げランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getGroundCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("exp")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("exp",
+							"where create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("exp",
+							"where create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("exp",
+							"where create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "経験値獲得ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("sozai")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("sozai_count",
+							"where create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("sozai_count",
+							"where create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("sozai_count",
+							"where create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "素材獲得ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getSozaiCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("weapon")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("weapon_count",
+							"where create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("weapon_count",
+							"where create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("weapon_count",
+							"where create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "武器獲得ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			} else if (command.endsWith("bukikon")) {
+				if (command.startsWith("d")) {
+					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
+							"where create_date >='" + strDate + "'");
+				} else if (command.startsWith("m")) {
+					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
+							"where create_date >='" + strFirstDate
+									+ "'");
+				} else {
+					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
+							"where create_date like'"
+									+ command.replace("_combat", "") + "%'");
+				}
+				rankingName = "武器魂獲得ランキング";
+				eb.setAuthor(rankingName);
+				for (Summary s : list) {
+					if (count % 20 == 0) {
+						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setDescription(rankingName);
+					}
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBukikonCount()) + "体**\n");
+					count++;
+				}
+				event.getMessage().reply(eb.build()).queue();
+			}
+		}
+
 	}
 
 	@Override
@@ -131,7 +613,7 @@ public class MessageEvent extends ListenerAdapter {
 		rmapCalc(event);
 
 		materiaCalc(event);
-		
+
 		ChannelManager channelManager = ChannelManager.getINSTANCE();
 		channelManager.setData(event.getChannel().getId(), new Date());
 
@@ -177,48 +659,58 @@ public class MessageEvent extends ListenerAdapter {
 		if (calcInfo == null) {
 			calcInfo = new CalcInfo();
 		}
-		
+
 		Pattern expP = Pattern.compile("<@" + userId + ">は(.*)EXP");
 		String exp = "";
-		if(embed.getDescription().contains("倒した")) {
+		if (embed.getDescription().contains("倒した")) {
 			Matcher expM = expP.matcher(embed.getDescription());
-			if(expM.find()) {
+			if (expM.find()) {
 				exp = expM.group(1).substring(2);
 			}
 		}
-		
+
 		calcInfo.addExp(Double.parseDouble(exp.replaceAll(",", "")));
-		
+
 		boolean isMateria = false;
 		boolean isBukikon = false;
 		boolean isWeapon = false;
 		for (Field f : embed.getFields()) {
-			
+
 			if (f.getValue().contains("[素材]")) {
 				isMateria = true;
 			}
 			if (f.getValue().contains("武器魂")) {
 				isBukikon = true;
 			}
-			if(f.getValue().contains("[武器]")) {
+			if (f.getValue().contains("[武器]")) {
 				isWeapon = true;
 			}
 		}
 		calcInfo.addBattleCount();
+		Summary summary = new Summary();
+		summary.setGuildId(event.getGuild().getId());
+		summary.setMemberId(userId);
+		summary.setCombatCount(1D);
+		summary.setExp(Double.parseDouble(exp.replaceAll(",", "")));
+		summary.setGroundCount(1D);
 
 		if (isMateria) {
+			summary.setSozaiCount(1D);
 			calcInfo.addMateriaCount();
 		}
 
 		if (isBukikon) {
+			summary.setBukikonCount(1D);
 			calcInfo.addBukikonCount();
 		}
-		
+
 		if (isWeapon) {
+			summary.setWeaponCount(1D);
 			calcInfo.addWeaponCount();
 		}
-
 		Calcmanager.setData(userId, calcInfo);
+
+		Sqlite.insertSummary(summary);
 
 	}
 
@@ -311,8 +803,10 @@ public class MessageEvent extends ListenerAdapter {
 		if (isServer) {
 			RankMessageManager rankMessageManager = RankMessageManager.getINSTANCE();
 			rankMessageManager.setRankMessage(event.getMessage());
-			event.getMessage().reply("Androidで見れる表示にしますか？").setActionRow(Button.of(ButtonStyle.PRIMARY, "rviewa " + event.getMessage().getId(), "表示"),
-					Button.of(ButtonStyle.DANGER, "cancel", "キャンセル")).queue();
+			event.getMessage().reply("Androidで見れる表示にしますか？")
+					.setActionRow(Button.of(ButtonStyle.PRIMARY, "rviewa " + event.getMessage().getId(), "表示"),
+							Button.of(ButtonStyle.DANGER, "cancel", "キャンセル"))
+					.queue();
 		}
 
 	}
