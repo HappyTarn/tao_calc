@@ -5,6 +5,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 
@@ -86,8 +87,17 @@ public class TestCommand extends Command {
 			eb.setTitle("超激レアが出たよ！");
 			event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 					Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
+			
+		}else if(event.getArgs().equals("7")) {
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setTitle("超激レアが出たよ！");
+			ActionRow s1 = ActionRow.of(Button.of(ButtonStyle.SUCCESS,"removeRole1", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+					Button.of(ButtonStyle.PRIMARY,"tcmt1", "通知1"),Button.of(ButtonStyle.DANGER,"tcmt_no1", "通知しない"));
+			ActionRow s2 = ActionRow.of(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+					Button.of(ButtonStyle.PRIMARY,"tcmt", "通知2"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない"));
+			event.getMessage().reply(eb.build()).setActionRows(s1,s2).queue();
 		}
 
 	}
-	
+
 }

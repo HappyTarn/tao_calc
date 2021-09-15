@@ -60,7 +60,7 @@ public class AmmountEvent extends MessageEvent {
 						EmbedBuilder eb = new EmbedBuilder();
 						eb.setTitle("超激レアが出たよ！");
 						event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知")).queue();
+								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
 					}
 				}
 			}
@@ -98,7 +98,7 @@ public class AmmountEvent extends MessageEvent {
 							EmbedBuilder eb = new EmbedBuilder();
 							eb.setTitle("超激レアが出たよ！");
 							event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-									Button.of(ButtonStyle.PRIMARY,"tcmt", "通知")).queue();
+									Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
 						}
 						if (Playermanager.isJoin(event.getGuild().getId())
 								&& memberId.equals(Playermanager.getUserId(event.getGuild().getId()))) {
@@ -166,7 +166,7 @@ public class AmmountEvent extends MessageEvent {
 						EmbedBuilder eb = new EmbedBuilder();
 						eb.setTitle("超激レアが出たよ！");
 						event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知")).queue();
+								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
 					}
 				}
 			}
