@@ -199,7 +199,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -230,7 +230,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -261,7 +261,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -269,7 +269,7 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + "体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + " exp**\n");
 					count++;
 				}
 				event.getMessage().reply(eb.build()).queue();
@@ -292,7 +292,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -300,7 +300,7 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getSozaiCount()) + "体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getSozaiCount()) + "個**\n");
 					count++;
 				}
 				event.getMessage().reply(eb.build()).queue();
@@ -323,7 +323,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -331,7 +331,7 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "本**\n");
 					count++;
 				}
 				event.getMessage().reply(eb.build()).queue();
@@ -354,7 +354,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -362,7 +362,7 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBukikonCount()) + "体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBukikonCount()) + "個**\n");
 					count++;
 				}
 				event.getMessage().reply(eb.build()).queue();
@@ -431,7 +431,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -462,7 +462,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -493,7 +493,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -501,7 +501,7 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + "体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + " exp**\n");
 					count++;
 				}
 				event.getMessage().reply(eb.build()).queue();
@@ -524,7 +524,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -532,7 +532,7 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getSozaiCount()) + "体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getSozaiCount()) + "個**\n");
 					count++;
 				}
 				event.getMessage().reply(eb.build()).queue();
@@ -555,7 +555,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -563,7 +563,7 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "本**\n");
 					count++;
 				}
 				event.getMessage().reply(eb.build()).queue();
@@ -586,7 +586,7 @@ public class MessageEvent extends ListenerAdapter {
 					if (count % 20 == 0) {
 						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName);
+						eb.setDescription(rankingName + "\n");
 					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -594,7 +594,7 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBukikonCount()) + "体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBukikonCount()) + "個**\n");
 					count++;
 				}
 				event.getMessage().reply(eb.build()).queue();
