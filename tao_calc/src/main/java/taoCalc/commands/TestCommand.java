@@ -96,6 +96,11 @@ public class TestCommand extends Command {
 			ActionRow s2 = ActionRow.of(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 					Button.of(ButtonStyle.PRIMARY,"tcmt", "通知2"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない"));
 			event.getMessage().reply(eb.build()).setActionRows(s1,s2).queue();
+		}else if(event.getArgs().equals("8")) {
+			
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setDescription(">>> <@300984197634588672>さん...セルフBOT検知しました。\n問答無用で永久BANです＾＾");
+			event.getChannel().sendMessage(eb.build()).queue();
 		}
 
 	}

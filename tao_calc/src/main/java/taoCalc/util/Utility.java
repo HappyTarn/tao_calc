@@ -1,6 +1,5 @@
 package taoCalc.util;
 
-import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -137,16 +136,17 @@ public class Utility {
 	public static boolean checkDate(String strDate) {
 	    if (strDate == null || strDate.length() != 10) {
 	        return false;
+	    }else {
+	    	return true;
 	    }
-	    strDate = strDate.replace('-', '/');
-	    DateFormat format = DateFormat.getDateInstance();
-	    // 日付/時刻解析を厳密に行うかどうかを設定する。
-	    format.setLenient(false);
-	    try {
-	        format.parse(strDate);
-	        return true;
-	    } catch (Exception e) {
-	        return false;
-	    }
+//	    strDate = strDate.replace('-', '/');
+//	    DateFormat format = DateFormat.getDateInstance();
+//	    format.setLenient(false);
+//	    try {
+//	        format.parse(strDate);
+//	        return true;
+//	    } catch (Exception e) {
+//	        return false;
+//	    }
 	}
 }

@@ -17,7 +17,7 @@ public class Rank extends Command {
 	public Rank() {
 		this.name = "rank";
 		this.help = "taoCalcでのランキング";
-		this.arguments = "[d,m,yyyy-mm-dd]";
+		this.arguments = "[d,m,yyyymmdd]";
 		this.guildOnly = false;
 	}
 
@@ -34,7 +34,7 @@ public class Rank extends Command {
 			event.getMessage().reply("ランキングにはこの検索機能はないようだ。").queue();
 			return;
 		}
-		if ("d".equals(kbn.toLowerCase()) || "m".equals(kbn.toLowerCase()) || Utility.checkDate(kbn)) {
+		if ("d".equals(kbn.toLowerCase()) || "m".equals(kbn.toLowerCase()) || kbn.length() == 8) {
 			
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setTitle("区分を選択してください");
@@ -44,7 +44,7 @@ public class Rank extends Command {
 					Button.of(ButtonStyle.DANGER, "cancel", "キャンセル"))
 			.queue();
 		}else {
-			event.getMessage().reply("ランキングにはこの検索機能はないようだ。").queue();
+			event.getMessage().reply("ランキングにはこの検索機能はないようだ。" + kbn + ":" + Utility.checkDate(kbn)).queue();
 			return;
 		}
 	}
