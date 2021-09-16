@@ -174,7 +174,8 @@ public class Sqlite {
 							+ "sozai_count,"
 							+ "weapon_count,"
 							+ "bukikon_count,"
-							+ "create_date"
+							+ "create_date,"
+							+ "ban_count"
 							+ ") values('"
 							+ summary.getGuildId() + "',"
 							+ summary.getMemberId() + ","
@@ -184,7 +185,8 @@ public class Sqlite {
 							+ summary.getSozaiCount() + ","
 							+ summary.getWeaponCount() + ","
 							+ summary.getBukikonCount() + ","
-							+ "datetime('now', '+9 hours'))");
+							+ "datetime('now', '+9 hours'),"
+							+ summary.getBanCount() + ")");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -223,7 +225,8 @@ public class Sqlite {
 					+ "sum(exp) as exp,"
 					+ "sum(sozai_count) as sozai_count,"
 					+ "sum(weapon_count) as weapon_count,"
-					+ "sum(bukikon_count) as bukikon_count"
+					+ "sum(bukikon_count) as bukikon_count,"
+					+ "sum(ban_count) as ban_count"
 					+ " from summary "+where+" group by member_id order by " + order + " desc");
 			while (rs.next()) {
 				Summary summary = new Summary();
@@ -234,6 +237,7 @@ public class Sqlite {
 				summary.setSozaiCount(rs.getDouble("sozai_count"));
 				summary.setWeaponCount(rs.getDouble("weapon_count"));
 				summary.setBukikonCount(rs.getDouble("bukikon_count"));
+				summary.setBanCount(rs.getDouble("ban_count"));
 				result.add(summary);
 			}
 		} catch (ClassNotFoundException e) {

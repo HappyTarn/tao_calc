@@ -161,14 +161,15 @@ public class MessageEvent extends ListenerAdapter {
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_sozai", "素材獲得"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_weapon", "武器獲得"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_bukikon", "武器魂獲得")),
-					ActionRow.of(Button.of(ButtonStyle.DANGER, "_ban", "BAN回数"),
+					ActionRow.of(Button.of(ButtonStyle.DANGER, event.getComponentId() +"_ban", "BAN回数"),
 							Button.of(ButtonStyle.DANGER, "cancel", "キャンセル")))
 					.queue();
 		}
 		if (event.getComponentId().startsWith("rank_this_")
 				&& (event.getComponentId().endsWith("_combat") || event.getComponentId().endsWith("_ground")
 						|| event.getComponentId().endsWith("_exp") || event.getComponentId().endsWith("_sozai")
-						|| event.getComponentId().endsWith("_weapon") || event.getComponentId().endsWith("_bukikon"))) {
+						|| event.getComponentId().endsWith("_weapon") || event.getComponentId().endsWith("_bukikon")
+						|| event.getComponentId().endsWith("_ban"))) {
 			for (Button b : event.getMessage().getButtons()) {
 				if (b.isDisabled()) {
 					event.editMessage(event.getMessage()).queue();
@@ -462,14 +463,15 @@ public class MessageEvent extends ListenerAdapter {
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_sozai", "素材獲得"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_weapon", "武器獲得"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_bukikon", "武器魂獲得")),
-					ActionRow.of(Button.of(ButtonStyle.DANGER, "_ban", "BAN回数"),
+					ActionRow.of(Button.of(ButtonStyle.DANGER, event.getComponentId() +"_ban", "BAN回数"),
 							Button.of(ButtonStyle.DANGER, "cancel", "キャンセル")))
 					.queue();
 		}
 		if (event.getComponentId().startsWith("rank_all_")
 				&& (event.getComponentId().endsWith("_combat") || event.getComponentId().endsWith("_ground")
 						|| event.getComponentId().endsWith("_exp") || event.getComponentId().endsWith("_sozai")
-						|| event.getComponentId().endsWith("_weapon") || event.getComponentId().endsWith("_bukikon"))) {
+						|| event.getComponentId().endsWith("_weapon") || event.getComponentId().endsWith("_bukikon")
+						|| event.getComponentId().endsWith("_ban"))) {
 			for (Button b : event.getMessage().getButtons()) {
 				if (b.isDisabled()) {
 					event.editMessage(event.getMessage()).queue();
