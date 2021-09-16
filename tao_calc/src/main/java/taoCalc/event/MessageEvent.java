@@ -773,9 +773,9 @@ public class MessageEvent extends ListenerAdapter {
 	 * @param event
 	 */
 	private void materiaCalc(MessageReceivedEvent event) {
-//		if (!event.getAuthor().getId().equals("526620171658330112")) {
-//			return;
-//		}
+		if (!event.getAuthor().getId().equals("526620171658330112")) {
+			return;
+		}
 
 		if (event.getMessage().getEmbeds() != null && event.getMessage().getEmbeds().isEmpty()) {
 			return;
