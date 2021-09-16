@@ -6,7 +6,6 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
-import taoCalc.util.Utility;
 
 /**
  *
@@ -38,13 +37,21 @@ public class Rank extends Command {
 			
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setTitle("区分を選択してください");
+			if(kbn.equals("d")) {
+				eb.setAuthor("本日のランキング");
+			}else if(kbn.equals("d")) {
+				eb.setAuthor("今月のランキング");
+			}else if(kbn.startsWith("2")) {
+				eb.setAuthor("指定日："+kbn+"のランキング");
+				kbn = "t";
+			}
 			event.getMessage().reply(eb.build())
 			.setActionRow(Button.of(ButtonStyle.SUCCESS, "rank_this_" + kbn, event.getGuild().getName()),
 					Button.of(ButtonStyle.SUCCESS, "rank_all_" + kbn, "全体"),
 					Button.of(ButtonStyle.DANGER, "cancel", "キャンセル"))
 			.queue();
 		}else {
-			event.getMessage().reply("ランキングにはこの検索機能はないようだ。" + kbn + ":" + Utility.checkDate(kbn)).queue();
+			event.getMessage().reply("ランキングにはこの検索機能はないようだ。").queue();
 			return;
 		}
 	}
