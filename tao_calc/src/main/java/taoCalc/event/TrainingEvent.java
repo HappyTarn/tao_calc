@@ -11,18 +11,21 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import taoCalc.Const;
 
 public class TrainingEvent extends MessageEvent {
 
-	static final String TAO_ID = "526620171658330112";
 	static final String OK_REPLY = "::t a";
 
 	public void onMessageReceived(MessageReceivedEvent event) {
 
-		if (!event.getAuthor().getId().equals(TAO_ID)) {
+		if (!event.getAuthor().getId().equals(Const.TAO_ID)) {
 			return;
 		}
 
+		if(event.getMessage().getReferencedMessage() == null) {
+			return;
+		}
 		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(OK_REPLY)) {
 			if (event.getMessage().getEmbeds().isEmpty()) {
 				return;

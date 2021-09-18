@@ -39,7 +39,7 @@ public class Rank extends Command {
 			eb.setTitle("区分を選択してください");
 			if(kbn.equals("d")) {
 				eb.setAuthor("本日のランキング");
-			}else if(kbn.equals("d")) {
+			}else if(kbn.equals("m")) {
 				eb.setAuthor("今月のランキング");
 			}else if(kbn.startsWith("2")) {
 				eb.setAuthor("指定日："+kbn+"のランキング");

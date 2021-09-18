@@ -10,12 +10,11 @@ import taoCalc.dto.PetInfo;
 
 public class PetCount extends MessageEvent {
 
-	static final String TAO_ID = "526620171658330112";
 
 	@Override
 	public void onMessageUpdate(MessageUpdateEvent event) {
 
-		if (!event.getMessage().getAuthor().getId().equals(TAO_ID)) {
+		if (!event.getMessage().getAuthor().getId().equals(Const.TAO_ID)) {
 			return;
 		}
 
@@ -87,7 +86,7 @@ public class PetCount extends MessageEvent {
 	}
 	
 	public void onMessageReceived(MessageReceivedEvent event) {
-		if (!event.getMessage().getAuthor().getId().equals(TAO_ID)) {
+		if (!event.getMessage().getAuthor().getId().equals(Const.TAO_ID)) {
 			return;
 		}
 

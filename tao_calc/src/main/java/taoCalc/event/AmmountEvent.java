@@ -32,15 +32,17 @@ import taoCalc.util.Utility;
 
 public class AmmountEvent extends MessageEvent {
 
-	static final String TAO_ID = "526620171658330112";
 	static final String NG_REPLY = "::re";
 
 	public void onMessageReceived(MessageReceivedEvent event) {
 
-		if (!event.getAuthor().getId().equals(TAO_ID)) {
+		if (!event.getAuthor().getId().equals(Const.TAO_ID)) {
 			return;
 		}
 
+		if(event.getMessage().getReferencedMessage() == null) {
+			return;
+		}
 		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
 			return;
 		}

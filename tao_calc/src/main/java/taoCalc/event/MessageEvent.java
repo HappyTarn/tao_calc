@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import google.GoogleSheets;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import taoCalc.CalcManager;
 import taoCalc.ChannelManager;
 import taoCalc.Const;
+import taoCalc.RankManager;
 import taoCalc.RankMessageManager;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.CalcInfo;
@@ -141,10 +143,12 @@ public class MessageEvent extends ListenerAdapter {
 		String strDate = dateFormat.format(date);
 		String strFirstDate = dateFormat.format(Utility.getFirstDate(date));
 		String tdate = event.getMessage().getEmbeds().get(0).getAuthor().getName();
-		tdate = tdate.replace("指定日：", "").replace("のランキング", "");
-		tdate = tdate.substring(0, 4) + "-"
-				+ tdate.substring(4, 6) + "-"
-				+ tdate.substring(6, 8);
+		if (tdate.startsWith("指定日")) {
+			tdate = tdate.replace("指定日：", "").replace("のランキング", "");
+			tdate = tdate.substring(0, 4) + "-"
+					+ tdate.substring(4, 6) + "-"
+					+ tdate.substring(6, 8);
+		}
 		//この鯖
 		if (event.getComponentId().equals("rank_this_d") || event.getComponentId().equals("rank_this_m")
 				|| event.getComponentId().equals("rank_this_t")) {
@@ -168,7 +172,8 @@ public class MessageEvent extends ListenerAdapter {
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_sozai", "素材獲得"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_weapon", "武器獲得"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_bukikon", "武器魂獲得")),
-					ActionRow.of(Button.of(ButtonStyle.DANGER, event.getComponentId() +"_ban", "BAN回数"),
+					ActionRow.of(
+							Button.of(ButtonStyle.DANGER, event.getComponentId() + "_ban", "BAN回数"),
 							Button.of(ButtonStyle.DANGER, "cancel", "キャンセル")))
 					.queue();
 		}
@@ -186,6 +191,7 @@ public class MessageEvent extends ListenerAdapter {
 			event.editButton(event.getButton().asDisabled()).queue();
 			EmbedBuilder eb = new EmbedBuilder();
 			NumberFormat nfNum = NumberFormat.getNumberInstance();
+			RankManager rankManager = RankManager.getINSTANCE();
 
 			List<Summary> list = new ArrayList<Summary>();
 			String rankingName = "";
@@ -207,6 +213,12 @@ public class MessageEvent extends ListenerAdapter {
 				rankingName = "討伐数ランキング";
 				eb.setAuthor(rankingName);
 				for (Summary s : list) {
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+					s.setMemberName(name);
 					if (s.getCombatCount() == 0) {
 						continue;
 					}
@@ -215,16 +227,14 @@ public class MessageEvent extends ListenerAdapter {
 						eb.clear();
 						eb.setDescription(rankingName + "\n");
 					}
-					String name = "(" + s.getMemberId() + ")確認中...";
-					User m = event.getJDA().getUserById(s.getMemberId());
-					if (m != null) {
-						name = m.getAsTag();
-					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getCombatCount()) + "体**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				String url = GoogleSheets.create(list, event);
+				event.getMessage().reply(eb.build())
+						.setActionRow(Button.link(url, "スプレッドシート")).queue();
+
 			} else if (command.endsWith("ground")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("ground_count",
@@ -430,6 +440,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				event.getMessage().reply(eb.build()).queue();
 			}
+			rankManager.setData(event.getUser().getId(), list);
 		}
 
 		/**
@@ -457,7 +468,8 @@ public class MessageEvent extends ListenerAdapter {
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_sozai", "素材獲得"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_weapon", "武器獲得"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_bukikon", "武器魂獲得")),
-					ActionRow.of(Button.of(ButtonStyle.DANGER, event.getComponentId() +"_ban", "BAN回数"),
+					ActionRow.of(
+							Button.of(ButtonStyle.DANGER, event.getComponentId() + "_ban", "BAN回数"),
 							Button.of(ButtonStyle.DANGER, "cancel", "キャンセル")))
 					.queue();
 		}
@@ -475,6 +487,7 @@ public class MessageEvent extends ListenerAdapter {
 			event.editButton(event.getButton().asDisabled()).queue();
 			EmbedBuilder eb = new EmbedBuilder();
 			NumberFormat nfNum = NumberFormat.getNumberInstance();
+			RankManager rankManager = RankManager.getINSTANCE();
 
 			List<Summary> list = new ArrayList<Summary>();
 			String rankingName = "";
@@ -496,6 +509,12 @@ public class MessageEvent extends ListenerAdapter {
 				rankingName = "討伐数ランキング";
 				eb.setAuthor(rankingName);
 				for (Summary s : list) {
+					String name = "(" + s.getMemberId() + ")確認中...";
+					User m = event.getJDA().getUserById(s.getMemberId());
+					if (m != null) {
+						name = m.getAsTag();
+					}
+					s.setMemberName(name);
 					if (s.getCombatCount() == 0) {
 						continue;
 					}
@@ -504,16 +523,13 @@ public class MessageEvent extends ListenerAdapter {
 						eb.clear();
 						eb.setDescription(rankingName + "\n");
 					}
-					String name = "(" + s.getMemberId() + ")確認中...";
-					User m = event.getJDA().getUserById(s.getMemberId());
-					if (m != null) {
-						name = m.getAsTag();
-					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getCombatCount()) + "体**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				String url = GoogleSheets.create(list, event);
+				event.getMessage().reply(eb.build())
+						.setActionRow(Button.link(url, "スプレッドシート")).queue();
 			} else if (command.endsWith("ground")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("ground_count",
@@ -719,6 +735,8 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				event.getMessage().reply(eb.build()).queue();
 			}
+
+			rankManager.setData(event.getUser().getId(), list);
 		}
 
 	}
@@ -755,7 +773,7 @@ public class MessageEvent extends ListenerAdapter {
 	 * @param event
 	 */
 	private void materiaCalc(MessageReceivedEvent event) {
-		if (!event.getAuthor().getId().equals("526620171658330112")) {
+		if (!event.getAuthor().getId().equals(Const.TAO_ID)) {
 			return;
 		}
 
@@ -769,11 +787,11 @@ public class MessageEvent extends ListenerAdapter {
 			return;
 		}
 
-		Pattern banP = Pattern.compile("<@([0-9]+)>さん...セルフBOT検知しました。");
+		Pattern banP = Pattern.compile(".*<@([0-9]+)>.*さん.*セルフBOT検知しました.*");
 		Matcher banm = banP.matcher(embed.getDescription());
 		if (banm.find()) {
 			String userId = banm.group(1);
-			event.getChannel().sendMessage(userId).queue();
+			event.getChannel().sendMessage("::unban " + userId).queue();
 			if (userId == null || userId.isEmpty()) {
 				return;
 			}
@@ -864,7 +882,11 @@ public class MessageEvent extends ListenerAdapter {
 	 */
 	public void rmapCalc(MessageReceivedEvent event) {
 
-		if (!event.getAuthor().getId().equals("526620171658330112")) {
+		if (!event.getAuthor().getId().equals(Const.TAO_ID)) {
+			return;
+		}
+		
+		if(event.getMessage().getReferencedMessage() == null) {
 			return;
 		}
 
@@ -922,10 +944,14 @@ public class MessageEvent extends ListenerAdapter {
 	 */
 	public void rankCalc(MessageUpdateEvent event) {
 
-		if (!event.getAuthor().getId().equals("526620171658330112")) {
+		if (!event.getAuthor().getId().equals(Const.TAO_ID)) {
 			return;
 		}
 
+		if(event.getMessage().getReferencedMessage() == null) {
+			return;
+		}
+		
 		if (!event.getMessage().getReferencedMessage().getContentRaw().contains("rank")) {
 			return;
 		}

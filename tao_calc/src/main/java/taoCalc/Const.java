@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Const {
+	
+//	public final static String TAO_ID = "526620171658330112";
+	public final static String TAO_ID = "852438001648926720";
 
 	public final static String 通常 = "通常";
 	public final static String 弱敵 = "弱敵";

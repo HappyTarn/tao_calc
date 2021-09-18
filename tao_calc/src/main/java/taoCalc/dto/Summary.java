@@ -5,6 +5,8 @@ public class Summary {
 	private String guildId = "";
 
 	private String memberId = "";
+	
+	private String memberName = "";
 
 	private Double combatCount = 0D;
 
@@ -90,6 +92,14 @@ public class Summary {
 
 	public void setBanCount(Double banCount) {
 		this.banCount = banCount;
+	}
+
+	public String getMemberName() {
+		return memberName;
+	}
+
+	public void setMemberName(String memberName) {
+		this.memberName = memberName;
 	}
 
 }

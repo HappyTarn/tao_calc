@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import taoCalc.Const;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.Member;
 import taoCalc.dto.PrizeMoneyInfo;
@@ -15,7 +16,6 @@ import taoCalc.util.Utility;
 
 public class PrizeMoneyEvent extends MessageEvent {
 
-	static final String TAO_ID = "526620171658330112";
 
 	public void onMessageReceived(MessageReceivedEvent event) {
 
@@ -30,7 +30,7 @@ public class PrizeMoneyEvent extends MessageEvent {
 			return;
 		}
 
-		if (!event.getMessage().getReferencedMessage().getAuthor().getId().equals(TAO_ID)) {
+		if (!event.getMessage().getReferencedMessage().getAuthor().getId().equals(Const.TAO_ID)) {
 			return;
 		}
 
