@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.ygimenez.method.Pages;
+import com.github.ygimenez.model.Page;
+
 import google.GoogleSheets;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -215,6 +218,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "討伐数ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -222,21 +226,24 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 					s.setMemberName(name);
-					if (s.getCombatCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName + "\n");
+						eb.setAuthor(rankingName + "\n");
 					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getCombatCount()) + "体**\n");
 					count++;
 				}
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				String url = GoogleSheets.create(list, event);
-				event.getMessage().reply(eb.build())
-						.setActionRow(Button.link(url, "スプレッドシート")).queue();
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent())
+						.setActionRow(Button.link(url, "スプレッドシート")).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 
 			} else if (command.endsWith("ground")) {
 				if (command.startsWith("d")) {
@@ -256,25 +263,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "地上げランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getGroundCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getGroundCount()) + "体**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("exp")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("exp",
@@ -293,25 +305,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "経験値獲得ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getExp() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + " exp**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + " exp体**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("sozai")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("sozai_count",
@@ -330,25 +347,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "素材獲得ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getSozaiCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getSozaiCount()) + "個**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("weapon")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("weapon_count",
@@ -367,25 +389,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "武器獲得ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getWeaponCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "本**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("bukikon")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
@@ -404,25 +431,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "武器魂獲得ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getBukikonCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBukikonCount()) + "個**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("ban")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("ban_count",
@@ -441,25 +473,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "BAN回数ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getBanCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBanCount()) + "回**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			}
 			rankManager.setData(event.getUser().getId(), list);
 		}
@@ -532,6 +569,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "討伐数ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
@@ -539,21 +577,26 @@ public class MessageEvent extends ListenerAdapter {
 						name = m.getAsTag();
 					}
 					s.setMemberName(name);
-					if (s.getCombatCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
 						eb.clear();
-						eb.setDescription(rankingName + "\n");
+						eb.setAuthor(rankingName + "\n");
 					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getCombatCount()) + "体**\n");
 					count++;
 				}
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				String url = GoogleSheets.create(list, event);
-				event.getMessage().reply(eb.build())
-						.setActionRow(Button.link(url, "スプレッドシート")).queue();
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent())
+						.setActionRow(Button.link(url, "スプレッドシート")).queue(success -> {
+							Pages.paginate(success, pages);
+						});
+				//				event.getMessage().reply(eb.build())
+				//						.setActionRow(Button.link(url, "スプレッドシート")).queue();
 			} else if (command.endsWith("ground")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("ground_count",
@@ -572,25 +615,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "地上げランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getGroundCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getGroundCount()) + "体**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("exp")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("exp",
@@ -609,25 +657,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "経験値獲得ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getExp() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + " exp**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("sozai")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("sozai_count",
@@ -646,25 +699,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "素材獲得ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getSozaiCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getSozaiCount()) + "個**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("weapon")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("weapon_count",
@@ -683,25 +741,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "武器獲得ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getWeaponCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "本**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getWeaponCount()) + "個**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("bukikon")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
@@ -720,25 +783,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "武器魂獲得ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getBukikonCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBukikonCount()) + "個**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			} else if (command.endsWith("ban")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("ban_count",
@@ -757,25 +825,30 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				rankingName = "BAN回数ランキング";
 				eb.setAuthor(rankingName);
+				ArrayList<Page> pages = new ArrayList<>();
 				for (Summary s : list) {
-					if (s.getBanCount() == 0) {
-						continue;
-					}
-					if (count % 20 == 0) {
-						event.getMessage().reply(eb.build()).queue();
-						eb.clear();
-						eb.setDescription(rankingName + "\n");
-					}
 					String name = "(" + s.getMemberId() + ")確認中...";
 					User m = event.getJDA().getUserById(s.getMemberId());
 					if (m != null) {
 						name = m.getAsTag();
 					}
+					s.setMemberName(name);
+					if ((count - 1) % 10 == 0 && count != 1) {
+						eb.setFooter(count / 10 + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+						pages.add(new Page(eb.build()));
+						//						event.getMessage().reply(eb.build()).queue();
+						eb.clear();
+						eb.setAuthor(rankingName + "\n");
+					}
 
 					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getBanCount()) + "回**\n");
 					count++;
 				}
-				event.getMessage().reply(eb.build()).queue();
+				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
+				pages.add(new Page(eb.build()));
+				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+							Pages.paginate(success, pages);
+						});
 			}
 
 			rankManager.setData(event.getUser().getId(), list);

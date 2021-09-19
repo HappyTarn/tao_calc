@@ -89,6 +89,11 @@
 			<artifactId>google-api-services-drive</artifactId>
 			<version>v3-rev197-1.25.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.ygimenez</groupId>
+			<artifactId>Pagination-Utils</artifactId>
+			<version>2.3.0</version>
+		</dependency>
 
 	</dependencies>
 	<!-- ビルド設定 -->

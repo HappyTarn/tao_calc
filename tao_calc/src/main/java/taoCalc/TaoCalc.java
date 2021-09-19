@@ -22,9 +22,13 @@ import java.util.List;
 
 import javax.security.auth.login.LoginException;
 
+import com.github.ygimenez.exception.InvalidHandlerException;
+import com.github.ygimenez.method.Pages;
+import com.github.ygimenez.model.PaginatorBuilder;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -66,13 +70,13 @@ public class TaoCalc {
 		// args[0] would be our Bot token
 		try {
 			new TaoCalc().start();
-		} catch (LoginException | IOException e) {
+		} catch (LoginException | IOException | InvalidHandlerException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 	}
 
-	public void start() throws IOException, LoginException {
+	public void start() throws IOException, LoginException, InvalidHandlerException {
 		// config.txt contains two lines
 		List<String> list = Files.readAllLines(Paths.get("config.txt"));
 
@@ -83,7 +87,7 @@ public class TaoCalc {
 		String ownerId = list.get(1);
 
 		Bot bot = new Bot(eventWaiter);
-
+		
 		// define a command client
 		CommandClientBuilder client = new CommandClientBuilder();
 
@@ -129,7 +133,7 @@ public class TaoCalc {
 				new AddExpCommand());
 
 		// start getting a bot account set up
-		JDABuilder.createDefault(token)
+		JDA jda = JDABuilder.createDefault(token)
 
 				// set the game for when the bot is loading
 				.setStatus(OnlineStatus.DO_NOT_DISTURB)
@@ -143,6 +147,8 @@ public class TaoCalc {
 				.enableIntents(GatewayIntent.GUILD_MEMBERS)
 				// start it up!
 				.build();
+		Pages.activate(PaginatorBuilder.createSimplePaginator(jda));
+		
 	}
 
 	public EventWaiter getEventWaiter() {

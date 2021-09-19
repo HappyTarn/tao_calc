@@ -1,10 +1,15 @@
 package taoCalc.commands;
 
+import java.util.ArrayList;
+
+import com.github.ygimenez.method.Pages;
+import com.github.ygimenez.model.Page;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
@@ -101,6 +106,23 @@ public class TestCommand extends Command {
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setDescription(">>> <@300984197634588672>さん...セルフBOT検知しました。\n問答無用で永久BANです＾＾");
 			event.getChannel().sendMessage(eb.build()).queue();
+		}else if (event.getArgs().equals("9")) {
+			
+			ArrayList<Page> pages = new ArrayList<>();
+
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setTitle("Example Embed");
+			eb.setDescription("Hello World!");
+			//Adding 10 pages to the list
+			for (int i = 0; i < 10; i++) {
+				eb.clear();
+				eb.setDescription("This is entry Nº " + i);
+				pages.add(new Page(eb.build()));
+			}
+			
+			event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				Pages.paginate(success,pages);
+			});
 		}
 
 	}
