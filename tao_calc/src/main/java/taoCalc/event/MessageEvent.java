@@ -151,7 +151,7 @@ public class MessageEvent extends ListenerAdapter {
 		}
 		//この鯖
 		if (event.getComponentId().equals("rank_this_d") || event.getComponentId().equals("rank_this_m")
-				|| event.getComponentId().equals("rank_this_t")) {
+				|| event.getComponentId().equals("rank_this_t") || event.getComponentId().equals("rank_this_a")) {
 			//			for (Button b : event.getMessage().getButtons()) {
 			//				if (b.isDisabled()) {
 			//					event.editMessage(event.getMessage()).queue();
@@ -205,10 +205,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("combat_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("combat_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("combat_count",
+							"where guild_id ='" + event.getGuild().getId() + "'");
 				}
 				rankingName = "討伐数ランキング";
 				eb.setAuthor(rankingName);
@@ -243,10 +246,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("ground_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("ground_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("ground_count",
+							"where guild_id ='" + event.getGuild().getId() + "'");
 				}
 				rankingName = "地上げランキング";
 				eb.setAuthor(rankingName);
@@ -277,10 +283,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("exp",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("exp",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("exp",
+							"where guild_id ='" + event.getGuild().getId() + "'");
 				}
 				rankingName = "経験値獲得ランキング";
 				eb.setAuthor(rankingName);
@@ -311,10 +320,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("sozai_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("sozai_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("sozai_count",
+							"where guild_id ='" + event.getGuild().getId() + "'");
 				}
 				rankingName = "素材獲得ランキング";
 				eb.setAuthor(rankingName);
@@ -345,10 +357,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("weapon_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("weapon_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("weapon_count",
+							"where guild_id ='" + event.getGuild().getId() + "'");
 				}
 				rankingName = "武器獲得ランキング";
 				eb.setAuthor(rankingName);
@@ -379,10 +394,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
+							"where guild_id ='" + event.getGuild().getId() + "'");
 				}
 				rankingName = "武器魂獲得ランキング";
 				eb.setAuthor(rankingName);
@@ -413,10 +431,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("ban_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("ban_count",
 							"where guild_id ='" + event.getGuild().getId() + "' and create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("ban_count",
+							"where guild_id ='" + event.getGuild().getId() + "'");
 				}
 				rankingName = "BAN回数ランキング";
 				eb.setAuthor(rankingName);
@@ -447,7 +468,7 @@ public class MessageEvent extends ListenerAdapter {
 		 * 全体
 		 */
 		if (event.getComponentId().equals("rank_all_d") || event.getComponentId().equals("rank_all_m")
-				|| event.getComponentId().equals("rank_all_t")) {
+				|| event.getComponentId().equals("rank_all_t") || event.getComponentId().equals("rank_all_a")) {
 			//			for (Button b : event.getMessage().getButtons()) {
 			//				if (b.isDisabled()) {
 			//					event.editMessage(event.getMessage()).queue();
@@ -501,10 +522,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("combat_count",
 							"where create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("combat_count",
 							"where create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("combat_count",
+							"");
 				}
 				rankingName = "討伐数ランキング";
 				eb.setAuthor(rankingName);
@@ -538,10 +562,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("ground_count",
 							"where create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("ground_count",
 							"where create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("ground_count",
+							"");
 				}
 				rankingName = "地上げランキング";
 				eb.setAuthor(rankingName);
@@ -572,10 +599,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("exp",
 							"where create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("exp",
 							"where create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("exp",
+							"");
 				}
 				rankingName = "経験値獲得ランキング";
 				eb.setAuthor(rankingName);
@@ -606,10 +636,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("sozai_count",
 							"where create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("sozai_count",
 							"where create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("sozai_count",
+							"");
 				}
 				rankingName = "素材獲得ランキング";
 				eb.setAuthor(rankingName);
@@ -640,10 +673,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("weapon_count",
 							"where create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("weapon_count",
 							"where create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("weapon_count",
+							"");
 				}
 				rankingName = "武器獲得ランキング";
 				eb.setAuthor(rankingName);
@@ -674,10 +710,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
 							"where create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
 							"where create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
+							"");
 				}
 				rankingName = "武器魂獲得ランキング";
 				eb.setAuthor(rankingName);
@@ -708,10 +747,13 @@ public class MessageEvent extends ListenerAdapter {
 					list = Sqlite.selectSummaryOrderByExample("ban_count",
 							"where create_date >='" + strFirstDate
 									+ "'");
-				} else {
+				} else if (command.startsWith("t")) {
 					list = Sqlite.selectSummaryOrderByExample("ban_count",
 							"where create_date like'"
 									+ tdate + "%'");
+				} else if (command.startsWith("a")) {
+					list = Sqlite.selectSummaryOrderByExample("ban_count",
+							"");
 				}
 				rankingName = "BAN回数ランキング";
 				eb.setAuthor(rankingName);
@@ -885,8 +927,8 @@ public class MessageEvent extends ListenerAdapter {
 		if (!event.getAuthor().getId().equals(Const.TAO_ID)) {
 			return;
 		}
-		
-		if(event.getMessage().getReferencedMessage() == null) {
+
+		if (event.getMessage().getReferencedMessage() == null) {
 			return;
 		}
 
@@ -948,10 +990,10 @@ public class MessageEvent extends ListenerAdapter {
 			return;
 		}
 
-		if(event.getMessage().getReferencedMessage() == null) {
+		if (event.getMessage().getReferencedMessage() == null) {
 			return;
 		}
-		
+
 		if (!event.getMessage().getReferencedMessage().getContentRaw().contains("rank")) {
 			return;
 		}

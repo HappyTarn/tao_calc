@@ -25,7 +25,7 @@ public class Rank extends Command {
 
 		String kbn = "";
 		if (event.getArgs().isEmpty()) {
-			kbn = "d";
+			kbn = "a";
 		} else {
 			kbn = event.getArgs().split(" ")[0];
 		}
@@ -33,7 +33,7 @@ public class Rank extends Command {
 			event.getMessage().reply("ランキングにはこの検索機能はないようだ。").queue();
 			return;
 		}
-		if ("d".equals(kbn.toLowerCase()) || "m".equals(kbn.toLowerCase()) || kbn.length() == 8) {
+		if ("d".equals(kbn.toLowerCase()) || "m".equals(kbn.toLowerCase()) || "a".equals(kbn.toLowerCase()) || kbn.length() == 8) {
 			
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setTitle("区分を選択してください");
@@ -44,6 +44,8 @@ public class Rank extends Command {
 			}else if(kbn.startsWith("2")) {
 				eb.setAuthor("指定日："+kbn+"のランキング");
 				kbn = "t";
+			}else if(kbn.equals("a")) {
+				eb.setAuthor("全期間のランキング");
 			}
 			event.getMessage().reply(eb.build())
 			.setActionRow(Button.of(ButtonStyle.SUCCESS, "rank_this_" + kbn, event.getGuild().getName()),

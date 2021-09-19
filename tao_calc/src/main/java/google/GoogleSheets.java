@@ -40,10 +40,11 @@ public class GoogleSheets {
 
 			NumberFormat nfNum = NumberFormat.getNumberInstance();
 			List<List<Object>> lists = new ArrayList<List<Object>>();
-			lists.add(Arrays.asList("名前", "戦闘", "地上げ", "武器", "素材", "武器魂"));
+			lists.add(Arrays.asList("名前", "ID", "戦闘", "地上げ", "武器", "素材", "武器魂"));
 			for (Summary summary : list) {
 				List<Object> l = new ArrayList<Object>();
 				l.add(summary.getMemberName());
+				l.add(summary.getMemberId());
 				l.add(nfNum.format(summary.getCombatCount()));
 				l.add(nfNum.format(summary.getGroundCount()));
 				l.add(nfNum.format(summary.getWeaponCount()));
