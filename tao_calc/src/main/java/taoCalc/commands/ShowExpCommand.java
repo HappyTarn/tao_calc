@@ -10,6 +10,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.Member;
+import taoCalc.util.Utility;
 
 public class ShowExpCommand extends Command {
 
@@ -50,6 +51,7 @@ public class ShowExpCommand extends Command {
 			embedBuilder.setTitle("保有経験値");
 
 			int count = 1;
+			Long sum = 0L;
 			for (Member member : memberList) {
 				if (count % 20 == 0) {
 					event.getMessage().reply(embedBuilder.build()).queue();
@@ -64,8 +66,14 @@ public class ShowExpCommand extends Command {
 				embedBuilder.appendDescription(
 						String.format("> %s ： <@%s> | 最終更新 ： %s \n", member.getFormatExp(), member.getId(),
 								member.getUpdateDate()));
+				sum = sum + member.getExp();
 				count++;
 			}
+			event.getMessage().reply(embedBuilder.build()).queue();
+			embedBuilder.clear();
+			embedBuilder.setTitle("保有経験値");
+			embedBuilder.appendDescription(
+					String.format("> %s ： %s \n", Utility.convertCommaToStr(sum), "全員の合計"));
 			event.getMessage().reply(embedBuilder.build()).queue();
 		} else if (event.getArgs().equals("sall")) {
 			List<Member> memberList = Sqlite.selectMemberOrderBySubjugation(guildId);
@@ -97,7 +105,7 @@ public class ShowExpCommand extends Command {
 			embedBuilder.clear();
 			embedBuilder.setTitle("討伐数一覧");
 			embedBuilder.appendDescription(
-					String.format("> %s ： %s \n", sum, "全員の合計"));
+					String.format("> %s ： %s \n", Utility.convertCommaToStr(sum), "全員の合計"));
 			event.getMessage().reply(embedBuilder.build()).queue();
 			
 			
