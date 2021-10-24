@@ -13,6 +13,7 @@ import com.github.ygimenez.model.Page;
 
 import google.GoogleSheets;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -51,14 +52,22 @@ public class MessageEvent extends ListenerAdapter {
 				}
 			}
 			MessageChannel mtChannel = null;
-			for (GuildChannel c : event.getGuild().getChannels()) {
+
+			Guild guild = event.getGuild();
+			if (guild.getId().equals("602561685450129408")) {
+				//もえにょだった場合
+				guild = event.getJDA().getGuildById("823574484660518932");
+
+			}
+
+			for (GuildChannel c : guild.getChannels()) {
 				if (c.getName().contains("レアキャラ報告")) {
 					mtChannel = (MessageChannel) c;
 				}
 			}
 
-			String roleId = Sqlite.getRole(event.getGuild().getId(), Const.超激レア報告OK);
-			Role role = event.getGuild().getRoleById(roleId);
+			String roleId = Sqlite.getRole(guild.getId(), Const.超激レア報告OK);
+			Role role = guild.getRoleById(roleId);
 
 			if (mtChannel != null && role != null) {
 
@@ -285,8 +294,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("exp")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("exp",
@@ -327,8 +336,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("sozai")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("sozai_count",
@@ -369,8 +378,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("weapon")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("weapon_count",
@@ -411,8 +420,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("bukikon")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
@@ -453,8 +462,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("ban")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("ban_count",
@@ -495,8 +504,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			}
 			rankManager.setData(event.getUser().getId(), list);
 		}
@@ -637,8 +646,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("exp")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("exp",
@@ -679,8 +688,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("sozai")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("sozai_count",
@@ -721,8 +730,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("weapon")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("weapon_count",
@@ -763,8 +772,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("bukikon")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("bukikon_count",
@@ -805,8 +814,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			} else if (command.endsWith("ban")) {
 				if (command.startsWith("d")) {
 					list = Sqlite.selectSummaryOrderByExample("ban_count",
@@ -847,8 +856,8 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
 				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+					Pages.paginate(success, pages);
+				});
 			}
 
 			rankManager.setData(event.getUser().getId(), list);
