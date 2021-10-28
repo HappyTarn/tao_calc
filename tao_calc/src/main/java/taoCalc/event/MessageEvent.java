@@ -71,7 +71,7 @@ public class MessageEvent extends ListenerAdapter {
 				//もえにょだった場合
 				roleId = Sqlite.getRole(guild.getId(), Const.他鯖超激レア報告OK);
 
-			}else {
+			} else {
 				roleId = Sqlite.getRole(guild.getId(), Const.超激レア報告OK);
 			}
 			Role role = guild.getRoleById(roleId);
