@@ -45,6 +45,23 @@ public class ShowPetCommand extends Command {
 			} else {
 				event.getMessage().reply("まだペット情報がないよ").queue();;
 			}
+		} else if (event.getArgs().startsWith("reset")) {
+			eb.setTitle("ペット集計をリセットしました。");
+
+			PetInfo petInfo = Sqlite.selectPetInfo(guildId, memberId);
+			if (petInfo != null) {
+				petInfo.setnCount(0L);
+				petInfo.setrCount(0L);
+				petInfo.setSrCount(0L);
+				petInfo.setUnknownCount(0L);
+				petInfo.setMmoCount(0L);
+				petInfo.setTaoCount(0L);
+				Sqlite.updatePetInfo(guildId, petInfo);
+				eb.appendDescription(petInfo.getTao割合());
+				event.getMessage().reply(eb.build()).queue();
+			} else {
+				event.getMessage().reply("まだペット情報がないよ").queue();;
+			}
 		}
 
 	}
