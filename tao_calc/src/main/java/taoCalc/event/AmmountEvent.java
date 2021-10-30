@@ -393,9 +393,9 @@ public class AmmountEvent extends MessageEvent {
 						member.addRank(Utility.getRank(inhoriList.get(0), inhoriList.get(1)));
 						isAddRank = true;
 					}
-
-					if (Utility.getRank(inhoriList.get(2), inhoriList.get(1)) != null) {
-						rate = Sqlite.selectRateByRank(guildId, Utility.getRank(inhoriList.get(2), inhoriList.get(1)));
+					rate = null;
+					if (Utility.getRank(inhoriList.get(2), inhoriList.get(3)) != null) {
+						rate = Sqlite.selectRateByRank(guildId, Utility.getRank(inhoriList.get(2), inhoriList.get(3)));
 					}
 					if (rate != null && rate.getAmount() != 0) {
 						if (!isSkip) {
@@ -403,8 +403,8 @@ public class AmmountEvent extends MessageEvent {
 							isInhoriUpdate = true;
 						}
 					}
-					if (Utility.getRank(inhoriList.get(0), inhoriList.get(1)) != null) {
-						member.addRank(Utility.getRank(inhoriList.get(0), inhoriList.get(1)));
+					if (Utility.getRank(inhoriList.get(2), inhoriList.get(3)) != null) {
+						member.addRank(Utility.getRank(inhoriList.get(2), inhoriList.get(3)));
 						isAddRank = true;
 					}
 				}
