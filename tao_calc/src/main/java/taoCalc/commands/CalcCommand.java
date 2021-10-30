@@ -53,7 +53,7 @@ public class CalcCommand extends Command {
 			
 			eb.setFooter("このデータはbotの再起動でリセット");
 
-			event.getMessage().reply(eb.build()).queue();
+			event.getMessage().replyEmbeds(eb.build()).queue();
 
 		}
 

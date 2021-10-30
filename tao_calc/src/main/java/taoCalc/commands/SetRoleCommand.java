@@ -65,7 +65,7 @@ public class SetRoleCommand extends Command {
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setTitle("ロール変更");
 		eb.setDescription(argsList[0] + " -> " + role.getAsMention());
-		event.getMessage().reply(eb.build()).queue();;
+		event.getMessage().replyEmbeds(eb.build()).queue();;
 		
 	}
 

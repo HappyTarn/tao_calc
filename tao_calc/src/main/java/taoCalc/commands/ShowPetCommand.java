@@ -30,7 +30,7 @@ public class ShowPetCommand extends Command {
 			PetInfo petInfo = Sqlite.selectPetInfo(guildId, memberId);
 			if (petInfo != null) {
 				eb.appendDescription(petInfo.get割合());
-				event.getMessage().reply(eb.build()).queue();
+				event.getMessage().replyEmbeds(eb.build()).queue();
 			} else {
 				event.getMessage().reply("まだペット情報がないよ").queue();;
 			}
@@ -41,7 +41,7 @@ public class ShowPetCommand extends Command {
 			PetInfo petInfo = Sqlite.selectPetInfo(guildId, memberId);
 			if (petInfo != null) {
 				eb.appendDescription(petInfo.getTao割合());
-				event.getMessage().reply(eb.build()).queue();
+				event.getMessage().replyEmbeds(eb.build()).queue();
 			} else {
 				event.getMessage().reply("まだペット情報がないよ").queue();;
 			}
@@ -58,7 +58,7 @@ public class ShowPetCommand extends Command {
 				petInfo.setTaoCount(0L);
 				Sqlite.updatePetInfo(guildId, petInfo);
 				eb.appendDescription(petInfo.getTao割合());
-				event.getMessage().reply(eb.build()).queue();
+				event.getMessage().replyEmbeds(eb.build()).queue();
 			} else {
 				event.getMessage().reply("まだペット情報がないよ").queue();;
 			}

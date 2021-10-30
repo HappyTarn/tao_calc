@@ -85,7 +85,7 @@ public class PrizeMoneyEvent extends MessageEvent {
 			eb.setDescription("この敵に懸賞金を掛けました。\n");
 			eb.addField(monsterName, prizeMoney.toString(), false);
 			eb.addField("保有経験値", beforeExp + " -> " + afterExp, false);
-			message.reply(eb.build()).queue();
+			message.replyEmbeds(eb.build()).queue();
 			
 			ArrayList<HashMap<String, String>> serverInfo = Sqlite.getMapExecuteSql(event.getGuild().getId(),
 					"select * from server_info");
@@ -118,7 +118,7 @@ public class PrizeMoneyEvent extends MessageEvent {
 				embedBuilder.addField(monsterName, prizeMoney.toString(), false);
 				embedBuilder.addField("懸賞金額", beforePrize + " -> " + afterPrize, false);
 				embedBuilder.addField("", "[direct_link](" + Utility.getLinkURL(guildId, event.getChannel().getId(), event.getMessageId()) +")", false);
-				event.getGuild().getTextChannelById(prizeInfoChannel).sendMessage(embedBuilder.build()).queue();
+				event.getGuild().getTextChannelById(prizeInfoChannel).sendMessageEmbeds(embedBuilder.build()).queue();
 			}
 		}
 	}

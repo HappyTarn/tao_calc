@@ -25,7 +25,7 @@ public class PingCommand extends Command {
 		event.reply("Ping: ...", m -> {
 			long ping = event.getMessage().getTimeCreated().until(m.getTimeCreated(), ChronoUnit.MILLIS);
 			//            m.editMessage("Ping: " + ping  + "ms | Websocket: " + event.getJDA().getGatewayPing() + "ms").queue();
-			m.editMessage(new EmbedBuilder().setTitle("応答速度")
+			m.editMessageEmbeds(new EmbedBuilder().setTitle("応答速度")
 					.setDescription("Ping: " + ping + "ms | Websocket: " + event.getJDA().getGatewayPing() + "ms")
 					.build()).queue();
 		});

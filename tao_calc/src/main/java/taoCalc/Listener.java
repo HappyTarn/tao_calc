@@ -65,7 +65,7 @@ public class Listener extends ListenerAdapter {
 					int count = 1;
 					for (Member member : memberList) {
 						if (count % 20 == 0) {
-							guild.getTextChannelById(expInfoChannel).sendMessage(eb.build()).queue();
+							guild.getTextChannelById(expInfoChannel).sendMessageEmbeds(eb.build()).queue();
 							try {
 								Thread.sleep(500);
 							} catch (InterruptedException e) {
@@ -79,7 +79,7 @@ public class Listener extends ListenerAdapter {
 										member.getUpdateDate()));
 						count++;
 					}
-					guild.getTextChannelById(expInfoChannel).sendMessage(eb.build()).queue();
+					guild.getTextChannelById(expInfoChannel).sendMessageEmbeds(eb.build()).queue();
 				}
 			}
 		}, 0, 60, TimeUnit.MINUTES);

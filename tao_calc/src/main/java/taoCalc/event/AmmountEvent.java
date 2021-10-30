@@ -62,7 +62,7 @@ public class AmmountEvent extends MessageEvent {
 						event.getGuild().addRoleToMember(memberId, role).queue();
 						EmbedBuilder eb = new EmbedBuilder();
 						eb.setTitle("超激レアが出たよ！");
-						event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+						event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
 					}
 				}
@@ -100,7 +100,7 @@ public class AmmountEvent extends MessageEvent {
 							event.getGuild().addRoleToMember(memberId, role).queue();
 							EmbedBuilder eb = new EmbedBuilder();
 							eb.setTitle("超激レアが出たよ！");
-							event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+							event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 									Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
 						}
 						if (Playermanager.isJoin(event.getGuild().getId())
@@ -168,7 +168,7 @@ public class AmmountEvent extends MessageEvent {
 						event.getGuild().addRoleToMember(memberId, role).queue();
 						EmbedBuilder eb = new EmbedBuilder();
 						eb.setTitle("超激レアが出たよ！");
-						event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
+						event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
 					}
 				}
@@ -298,7 +298,7 @@ public class AmmountEvent extends MessageEvent {
 							nfNum.format(before) + " -> " + nfNum.format(after), false);
 
 					if (isWrite) {
-						event.getMessage().reply(eb.build()).queue();
+						event.getMessage().replyEmbeds(eb.build()).queue();
 					}
 
 				}
@@ -443,7 +443,7 @@ public class AmmountEvent extends MessageEvent {
 							nfNum.format(before) + " -> " + nfNum.format(after), false);
 					eb.setFooter("貫通分の表示（お試し）");
 					if (isWrite) {
-						event.getMessage().reply(eb.build()).queue();
+						event.getMessage().replyEmbeds(eb.build()).queue();
 					}
 				}
 			}

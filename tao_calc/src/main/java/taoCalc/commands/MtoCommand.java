@@ -44,7 +44,7 @@ public class MtoCommand extends Command {
 				if(event.getGuild().getId().equals("823574484660518932")) {
 					EmbedBuilder eb = new EmbedBuilder();
 					eb.setTitle("どこで出た？");
-					event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.PRIMARY,"tcmto 公式", "公式"),
+					event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.PRIMARY,"tcmto 公式", "公式"),
 							Button.of(ButtonStyle.PRIMARY,"tcmto DW", "DW"),
 							Button.of(ButtonStyle.PRIMARY,"tcmto KING", "KING"),
 							Button.of(ButtonStyle.PRIMARY,"tcmto もえにょ", "もえにょ"),

@@ -40,7 +40,7 @@ public class SetExpInfoChannelCommand extends Command {
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setTitle("垂れ流しチャンネルを設定");
 		eb.setDescription("<#" + m.group() + ">");
-		event.getMessage().reply(eb.build()).queue();
+		event.getMessage().replyEmbeds(eb.build()).queue();
 		;
 
 	}

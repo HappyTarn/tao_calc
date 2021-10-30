@@ -47,7 +47,7 @@ public class Rank extends Command {
 			}else if(kbn.equals("a")) {
 				eb.setAuthor("全期間のランキング");
 			}
-			event.getMessage().reply(eb.build())
+			event.getMessage().replyEmbeds(eb.build())
 			.setActionRow(Button.of(ButtonStyle.SUCCESS, "rank_this_" + kbn, event.getGuild().getName()),
 					Button.of(ButtonStyle.SUCCESS, "rank_all_" + kbn, "全体"),
 					Button.of(ButtonStyle.DANGER, "cancel", "キャンセル"))

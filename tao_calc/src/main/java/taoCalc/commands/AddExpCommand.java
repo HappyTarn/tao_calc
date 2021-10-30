@@ -88,7 +88,7 @@ public class AddExpCommand extends Command {
 			eb.addField("変更前", "0", false);
 			eb.addField("変更後", member.getFormatExp(), false);
 
-			event.getMessage().reply(eb.build()).queue();
+			event.getMessage().replyEmbeds(eb.build()).queue();
 			return;
 		}
 
@@ -102,7 +102,7 @@ public class AddExpCommand extends Command {
 		eb.addField("変更前", beforExp, false);
 		eb.addField("変更後", afterExp, false);
 
-		event.getMessage().reply(eb.build()).queue();
+		event.getMessage().replyEmbeds(eb.build()).queue();
 	}
 
 }

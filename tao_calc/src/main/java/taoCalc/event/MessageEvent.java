@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
@@ -39,6 +40,13 @@ import taoCalc.dto.Summary;
 import taoCalc.util.Utility;
 
 public class MessageEvent extends ListenerAdapter {
+	
+	
+
+	@Override
+	public void onSelectionMenu(SelectionMenuEvent event) {
+		
+	}
 
 	public void onButtonClick(ButtonClickEvent event) {
 
@@ -141,7 +149,7 @@ public class MessageEvent extends ListenerAdapter {
 			eb.setDescription(embed.getDescription().replaceAll("\\(<\\('', ''\\)>\\)", ""));
 
 			event.getMessage().delete().queue();
-			event.getChannel().sendMessage(eb.build()).queue();
+			event.getChannel().sendMessageEmbeds(eb.build()).queue();
 		}
 
 		//キャンセル
@@ -184,7 +192,7 @@ public class MessageEvent extends ListenerAdapter {
 			eb.setTitle(event.getGuild().getName() + "ランキング");
 			eb.setAuthor(event.getMessage().getEmbeds().get(0).getAuthor().getName());
 
-			event.getChannel().sendMessage(eb.build()).setActionRows(
+			event.getChannel().sendMessageEmbeds(eb.build()).setActionRows(
 					ActionRow.of(Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_combat", "討伐"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_ground", "地上げ")),
 					ActionRow.of(Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_exp", "経験値獲得"),
@@ -256,7 +264,7 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				String url = GoogleSheets.create(list, event);
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent())
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent())
 						.setActionRow(Button.link(url, "スプレッドシート")).queue(success -> {
 							Pages.paginate(success, pages);
 						});
@@ -300,7 +308,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("exp")) {
@@ -342,7 +350,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("sozai")) {
@@ -384,7 +392,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("weapon")) {
@@ -426,7 +434,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("bukikon")) {
@@ -468,7 +476,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("ban")) {
@@ -510,7 +518,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			}
@@ -535,7 +543,7 @@ public class MessageEvent extends ListenerAdapter {
 			eb.setTitle("導入鯖全体ランキング");
 			eb.setAuthor(event.getMessage().getEmbeds().get(0).getAuthor().getName());
 
-			event.getChannel().sendMessage(eb.build()).setActionRows(
+			event.getChannel().sendMessageEmbeds(eb.build()).setActionRows(
 					ActionRow.of(Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_combat", "討伐"),
 							Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_ground", "地上げ")),
 					ActionRow.of(Button.of(ButtonStyle.PRIMARY, event.getComponentId() + "_exp", "経験値獲得"),
@@ -607,7 +615,7 @@ public class MessageEvent extends ListenerAdapter {
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				String url = GoogleSheets.create(list, event);
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent())
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent())
 						.setActionRow(Button.link(url, "スプレッドシート")).queue(success -> {
 							Pages.paginate(success, pages);
 						});
@@ -652,7 +660,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("exp")) {
@@ -694,7 +702,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("sozai")) {
@@ -736,7 +744,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("weapon")) {
@@ -778,7 +786,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("bukikon")) {
@@ -820,7 +828,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			} else if (command.endsWith("ban")) {
@@ -862,7 +870,7 @@ public class MessageEvent extends ListenerAdapter {
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
 					Pages.paginate(success, pages);
 				});
 			}

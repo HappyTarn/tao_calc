@@ -40,7 +40,7 @@ public class SetPrizeInfoChannelCommand extends Command {
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setTitle("懸賞金チャンネルを設定");
 		eb.setDescription("<#" + m.group() + ">");
-		event.getMessage().reply(eb.build()).queue();
+		event.getMessage().replyEmbeds(eb.build()).queue();
 		;
 
 	}

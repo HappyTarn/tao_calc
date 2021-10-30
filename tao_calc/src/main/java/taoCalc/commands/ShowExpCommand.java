@@ -44,7 +44,7 @@ public class ShowExpCommand extends Command {
 			} else {
 				eb.addField(event.getAuthor().getName(), "0", false);
 			}
-			event.getMessage().reply(eb.build()).queue();
+			event.getMessage().replyEmbeds(eb.build()).queue();
 		} else if (event.getArgs().equals("all")) {
 			List<Member> memberList = Sqlite.selectMemberOrderByExpDesc(guildId);
 			EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -54,7 +54,7 @@ public class ShowExpCommand extends Command {
 			Long sum = 0L;
 			for (Member member : memberList) {
 				if (count % 20 == 0) {
-					event.getMessage().reply(embedBuilder.build()).queue();
+					event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
@@ -69,12 +69,12 @@ public class ShowExpCommand extends Command {
 				sum = sum + member.getExp();
 				count++;
 			}
-			event.getMessage().reply(embedBuilder.build()).queue();
+			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 			embedBuilder.clear();
 			embedBuilder.setTitle("保有経験値");
 			embedBuilder.appendDescription(
 					String.format("> %s ： %s \n", Utility.convertCommaToStr(sum), "全員の合計"));
-			event.getMessage().reply(embedBuilder.build()).queue();
+			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 		} else if (event.getArgs().equals("sall")) {
 			List<Member> memberList = Sqlite.selectMemberOrderBySubjugation(guildId);
 			EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -87,7 +87,7 @@ public class ShowExpCommand extends Command {
 					continue;
 				}
 				if (count % 20 == 0) {
-					event.getMessage().reply(embedBuilder.build()).queue();
+					event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
@@ -101,12 +101,12 @@ public class ShowExpCommand extends Command {
 				sum = sum + member.get合計();
 				count++;
 			}
-			event.getMessage().reply(embedBuilder.build()).queue();
+			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 			embedBuilder.clear();
 			embedBuilder.setTitle("討伐数一覧");
 			embedBuilder.appendDescription(
 					String.format("> %s ： %s \n", Utility.convertCommaToStr(sum), "全員の合計"));
-			event.getMessage().reply(embedBuilder.build()).queue();
+			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 			
 			
 		} else if (event.getArgs().equals("pall")) {
@@ -124,7 +124,7 @@ public class ShowExpCommand extends Command {
 					continue;
 				}
 				if (count % 20 == 0) {
-					event.getMessage().reply(embedBuilder.build()).queue();
+					event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
@@ -137,7 +137,7 @@ public class ShowExpCommand extends Command {
 						String.format("> %s％  ： <@%s> \n", ((float) member.get合計() / (float) sum * 100), member.getId()));
 				count++;
 			}
-			event.getMessage().reply(embedBuilder.build()).queue();
+			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 		} else if (event.getArgs().split(" ").length > 0) {
 			Pattern p = Pattern.compile("([0-9]+)");
 			Matcher m = p.matcher(event.getArgs().split(" ")[0]);
@@ -157,7 +157,7 @@ public class ShowExpCommand extends Command {
 				} else if (member.getレア率() > 1) {
 					eb.setFooter("MMO君使ってないよね？");
 				}
-				event.getMessage().reply(eb.build()).queue();
+				event.getMessage().replyEmbeds(eb.build()).queue();
 			}
 		}
 
