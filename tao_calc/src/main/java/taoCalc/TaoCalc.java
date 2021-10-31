@@ -40,6 +40,7 @@ import taoCalc.commands.CalcCommand;
 import taoCalc.commands.ChangeExpCommand;
 import taoCalc.commands.ChangeRateCommand;
 import taoCalc.commands.DbCommand;
+import taoCalc.commands.MenuCommand;
 import taoCalc.commands.MtCommand;
 import taoCalc.commands.MtoCommand;
 import taoCalc.commands.PingCommand;
@@ -130,6 +131,7 @@ public class TaoCalc {
 				new MtoCommand(),
 				new Private(),
 				new Rank(),
+				new MenuCommand(),
 				new AddExpCommand());
 
 		// start getting a bot account set up

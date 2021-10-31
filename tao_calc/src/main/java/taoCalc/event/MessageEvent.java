@@ -36,16 +36,58 @@ import taoCalc.RankManager;
 import taoCalc.RankMessageManager;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.CalcInfo;
+import taoCalc.dto.Member;
+import taoCalc.dto.PetInfo;
 import taoCalc.dto.Summary;
 import taoCalc.util.Utility;
 
 public class MessageEvent extends ListenerAdapter {
-	
-	
 
 	@Override
 	public void onSelectionMenu(SelectionMenuEvent event) {
-		
+
+		String componentId = event.getComponentId();
+		if (componentId.equals("menu:class")) {
+			event.editMessage(event.getSelectedOptions().get(0).getLabel()).queue();
+			event.editSelectionMenu(null).queue();
+
+			String selectedValue = event.getSelectedOptions().get(0).getValue();
+			if (selectedValue.equals("se")) {
+				String guildId = event.getGuild().getId();
+				String memberId = event.getMember().getId();
+				EmbedBuilder eb = new EmbedBuilder();
+				eb.setTitle("保有経験値");
+
+				Member member = Sqlite.selectMemberById(guildId, memberId);
+				if (member != null) {
+					eb.appendDescription(String.format("> %s ： <@%s>\n", member.getFormatExp(), member.getId()));
+					eb.appendDescription(member.get割合());
+					if (member.getレア率() > 2) {
+						eb.setFooter("こいつやってますよ！！！（多分）");
+					} else if (member.getレア率() > 1) {
+						eb.setFooter("MMO君使ってないよね？");
+					}
+				} else {
+					eb.addField(event.getMember().getUser().getName(), "0", false);
+				}
+				event.getMessage().replyEmbeds(eb.build()).queue();
+			} else if (selectedValue.equals("sp")) {
+				String guildId = event.getGuild().getId();
+				String memberId = event.getMember().getId();
+				EmbedBuilder eb = new EmbedBuilder();
+				eb.setTitle("ペット集計結果");
+
+				PetInfo petInfo = Sqlite.selectPetInfo(guildId, memberId);
+				if (petInfo != null) {
+					eb.appendDescription(petInfo.get割合());
+					event.getMessage().replyEmbeds(eb.build()).queue();
+				} else {
+					event.getMessage().reply("まだペット情報がないよ").queue();
+					;
+				}
+			}
+
+		}
 	}
 
 	public void onButtonClick(ButtonClickEvent event) {
@@ -1041,6 +1083,7 @@ public class MessageEvent extends ListenerAdapter {
 
 		Long total = 0L;
 		Long totalLv = 0L;
+		Long skillP = 0L;
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("```\nLv -> 経験値変換\n");
 		int count = 0;
@@ -1051,6 +1094,7 @@ public class MessageEvent extends ListenerAdapter {
 
 			String strLv = field.getValue().replaceAll("素早さ.*", "").substring(9).trim();
 			Long lv = Utility.convertCommmaToLong(strLv);
+			skillP = skillP + lv / 20000;
 			totalLv += lv;
 			Long exp = lv * lv;
 			total += exp;
@@ -1071,6 +1115,7 @@ public class MessageEvent extends ListenerAdapter {
 
 		stringBuilder.append("        : " + Utility.convertKanjiNum(total) + " exp\n");
 		stringBuilder.append("total Lv: " + Utility.convertCommaToStr(totalLv) + "\n");
+		stringBuilder.append("total SP: " + Utility.convertCommaToStr(skillP) + "\n");
 		stringBuilder.append("```");
 
 		event.getMessage().reply(stringBuilder.toString()).queue();

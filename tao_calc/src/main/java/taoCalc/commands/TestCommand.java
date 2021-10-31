@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 
 /**
  *
@@ -83,31 +84,36 @@ public class TestCommand extends Command {
 		} else if (event.getArgs().equals("5")) {
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setTitle("どこで出た？");
-			event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.PRIMARY,"tcmto 公式", "公式"),
-					Button.of(ButtonStyle.PRIMARY,"tcmto DW", "DW"),
-					Button.of(ButtonStyle.PRIMARY,"tcmto KING", "KING"),
-					Button.of(ButtonStyle.PRIMARY,"tcmto もえにょ", "もえにょ")).queue();
-		}else if(event.getArgs().equals("6")) {
+			event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.PRIMARY, "tcmto 公式", "公式"),
+					Button.of(ButtonStyle.PRIMARY, "tcmto DW", "DW"),
+					Button.of(ButtonStyle.PRIMARY, "tcmto KING", "KING"),
+					Button.of(ButtonStyle.PRIMARY, "tcmto もえにょ", "もえにょ")).queue();
+		} else if (event.getArgs().equals("6")) {
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setTitle("超激レアが出たよ！");
-			event.getMessage().reply(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-					Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
-			
-		}else if(event.getArgs().equals("7")) {
+			event.getMessage().reply(eb.build())
+					.setActionRow(Button.of(ButtonStyle.SUCCESS, "removeRole", "発言不可解除", Emoji.fromUnicode("U+1F91E")),
+							Button.of(ButtonStyle.PRIMARY, "tcmt", "通知"),
+							Button.of(ButtonStyle.DANGER, "tcmt_no", "通知しない"))
+					.queue();
+
+		} else if (event.getArgs().equals("7")) {
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setTitle("超激レアが出たよ！");
-			ActionRow s1 = ActionRow.of(Button.of(ButtonStyle.SUCCESS,"removeRole1", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-					Button.of(ButtonStyle.PRIMARY,"tcmt1", "通知1"),Button.of(ButtonStyle.DANGER,"tcmt_no1", "通知しない"));
-			ActionRow s2 = ActionRow.of(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-					Button.of(ButtonStyle.PRIMARY,"tcmt", "通知2"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない"));
-			event.getMessage().reply(eb.build()).setActionRows(s1,s2).queue();
-		}else if(event.getArgs().equals("8")) {
-			
+			ActionRow s1 = ActionRow.of(
+					Button.of(ButtonStyle.SUCCESS, "removeRole1", "発言不可解除", Emoji.fromUnicode("U+1F91E")),
+					Button.of(ButtonStyle.PRIMARY, "tcmt1", "通知1"), Button.of(ButtonStyle.DANGER, "tcmt_no1", "通知しない"));
+			ActionRow s2 = ActionRow.of(
+					Button.of(ButtonStyle.SUCCESS, "removeRole", "発言不可解除", Emoji.fromUnicode("U+1F91E")),
+					Button.of(ButtonStyle.PRIMARY, "tcmt", "通知2"), Button.of(ButtonStyle.DANGER, "tcmt_no", "通知しない"));
+			event.getMessage().reply(eb.build()).setActionRows(s1, s2).queue();
+		} else if (event.getArgs().equals("8")) {
+
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setDescription(">>> <@300984197634588672>さん...セルフBOT検知しました。\n問答無用で永久BANです＾＾");
 			event.getChannel().sendMessage(eb.build()).queue();
-		}else if (event.getArgs().equals("9")) {
-			
+		} else if (event.getArgs().equals("9")) {
+
 			ArrayList<Page> pages = new ArrayList<>();
 
 			EmbedBuilder eb = new EmbedBuilder();
@@ -119,10 +125,22 @@ public class TestCommand extends Command {
 				eb.setDescription("This is entry Nº " + i);
 				pages.add(new Page(eb.build()));
 			}
-			
+
 			event.getChannel().sendMessage((MessageEmbed) pages.get(0).getContent()).queue(success -> {
-				Pages.paginate(success,pages);
+				Pages.paginate(success, pages);
 			});
+		} else if (event.getArgs().equals("10")) {
+			SelectionMenu menu = SelectionMenu.create("menu:class")
+					.setPlaceholder("Choose your class") // shows the placeholder indicating what this menu is for
+					.setRequiredRange(1, 1) // only one can be selected
+					.addOption("Arcane Mage", "mage-arcane")
+					.addOption("Fire Mage", "mage-fire")
+					.addOption("Frost Mage", "mage-frost")
+					.build();
+
+			event.getMessage().reply("Please pick your class below")
+					.setActionRow(menu)
+					.queue();
 		}
 
 	}
