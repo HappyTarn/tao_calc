@@ -167,7 +167,7 @@ public class AmmountEvent extends MessageEvent {
 					if (role != null) {
 						event.getGuild().addRoleToMember(memberId, role).queue();
 						EmbedBuilder eb = new EmbedBuilder();
-						eb.setTitle("超激レアが出たよ！");
+						eb.setTitle("トールが出たよ！");
 						event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
 					}
@@ -348,9 +348,6 @@ public class AmmountEvent extends MessageEvent {
 						summary.setGroundCount(1D);
 						Sqlite.insertSummary(summary);
 					}
-					if (event.getGuild().getId().equals("838732784305569792")) {
-						return;
-					}
 					Rate rate = null;
 					if (Utility.getRank(inhoriList.get(0), inhoriList.get(1)) != null) {
 						rate = Sqlite.selectRateByRank(guildId, Utility.getRank(inhoriList.get(0), inhoriList.get(1)));
@@ -375,9 +372,6 @@ public class AmmountEvent extends MessageEvent {
 						summary.setMemberId(memberId);
 						summary.setGroundCount(2D);
 						Sqlite.insertSummary(summary);
-					}
-					if (event.getGuild().getId().equals("838732784305569792")) {
-						return;
 					}
 					Rate rate = null;
 					if (Utility.getRank(inhoriList.get(0), inhoriList.get(1)) != null) {

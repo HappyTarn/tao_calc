@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import taoCalc.commands.AddExpCommand;
+import taoCalc.commands.AkiCommand;
 import taoCalc.commands.CalcCommand;
 import taoCalc.commands.ChangeExpCommand;
 import taoCalc.commands.ChangeRateCommand;
@@ -132,6 +133,7 @@ public class TaoCalc {
 				new Private(),
 				new Rank(),
 				new MenuCommand(),
+				new AkiCommand(),
 				new AddExpCommand());
 
 		// start getting a bot account set up

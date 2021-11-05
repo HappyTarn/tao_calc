@@ -935,6 +935,7 @@ public class MessageEvent extends ListenerAdapter {
 
 		ChannelManager channelManager = ChannelManager.getINSTANCE();
 		channelManager.setData(event.getChannel().getId(), new Date());
+		channelManager.setCData(event.getChannel().getId(), event.getChannel());
 
 	}
 
