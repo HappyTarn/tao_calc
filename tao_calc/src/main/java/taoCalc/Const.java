@@ -74,6 +74,11 @@ public class Const {
 	/** トール */
 	public final static String tohruc = "tohru";
 	
+	/** 超激レア出現 */
+	public final static String 超激レア出現 = "超激レア出現";
+	/** トール出現 */
+	public final static String トール出現 = "トール出現";
+	
 	
 	
 	/**

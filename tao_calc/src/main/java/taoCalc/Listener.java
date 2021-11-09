@@ -83,23 +83,30 @@ public class Listener extends ListenerAdapter {
 				}
 			}
 		}, 0, 60, TimeUnit.MINUTES);
-		
+
 		bot.getThreadpool().scheduleWithFixedDelay(() -> {
 			for (Guild guild : event.getJDA().getGuilds()) {
-				if(guild.getId().equals("823574484660518932")) {
+				if (guild.getId().equals("823574484660518932")) {
 					TextChannel channnel = guild.getTextChannelById("833683675345977416");
 					ChannelManager channelManager = ChannelManager.getINSTANCE();
 					Calendar calendar = Calendar.getInstance();
 					Date date = channelManager.getDate("833683675345977416");
-					if(date == null) {
+					String msg = channelManager.getFDate("833683675345977416");
+					if (date == null) {
 						return;
 					}
 					calendar.setTime(date);
 					calendar.add(Calendar.MINUTE, 3);
-					
+
 					Date now = new Date();
-					if(now.after(calendar.getTime())) {
-						channnel.sendMessage("<@&850863982465384459> 回せ！").queue();
+					if (now.after(calendar.getTime())) {
+						if (msg.equals(Const.超激レア出現) || msg.equals(Const.トール出現)) {
+
+						} else {
+							channnel.sendMessage("<@&850863982465384459> 回せ！").queue();
+							channelManager.setData(channnel.getId(), null);
+							channelManager.setCData(channnel.getId(), channnel);
+						}
 					}
 				}
 			}

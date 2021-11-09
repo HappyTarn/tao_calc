@@ -174,7 +174,8 @@ public class CommandClientImpl implements CommandClient, EventListener
                 User owner = event.getJDA().getUserById(ownerId);
                 if(owner!=null)
                 {
-                    builder.append("\n\nさらにヘルプが必要な場合は **").append(owner.getName()).append("**#").append(owner.getDiscriminator()).append("へ");
+                	builder.append("\n\nさらにヘルプが必要な場合は **").append(owner.getName()).append("**#").append(owner.getDiscriminator()).append("へ");
+                	builder.append("\nもしくはここで聞いて→https://discord.gg/UPKcz7HPfw");
                     if(serverInvite!=null)
                         builder.append(" or join ").append(serverInvite);
                 }

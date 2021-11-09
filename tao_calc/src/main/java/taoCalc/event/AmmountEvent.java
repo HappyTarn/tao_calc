@@ -2,6 +2,7 @@ package taoCalc.event;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import taoCalc.CalcManager;
+import taoCalc.ChannelManager;
 import taoCalc.Const;
 import taoCalc.PlayerManager;
 import taoCalc.db.Sqlite;
@@ -52,6 +54,9 @@ public class AmmountEvent extends MessageEvent {
 				Permission.MESSAGE_WRITE,Permission.MESSAGE_EMBED_LINKS);
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
+		ChannelManager channelManager = ChannelManager.getINSTANCE();
+		String channelId = event.getChannel().getId();
+		
 		// お試し
 		if (event.getMessage().getReferencedMessage().getContentRaw().toLowerCase().startsWith("::atk")) {
 			if (event.getMessage().getEmbeds().isEmpty()) {
@@ -64,6 +69,7 @@ public class AmmountEvent extends MessageEvent {
 						eb.setTitle("超激レアが出たよ！");
 						event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
+						channelManager.setFData(channelId, Const.超激レア出現);
 					}
 				}
 			}
@@ -80,18 +86,25 @@ public class AmmountEvent extends MessageEvent {
 						if (event.getMessage().getEmbeds().get(0).getTitle().contains("素早さ: 100")) {
 							rank = Const.鯖限;
 						}
+						channelManager.setFData(channelId, "使用");
 					} else if (event.getMessage().getEmbeds().get(0).getTitle().contains("【" + Const.弱敵 + "】")) {
 						rank = Const.弱敵;
+						channelManager.setFData(channelId, "使用");
 					} else if (event.getMessage().getEmbeds().get(0).getTitle().contains("【" + Const.強敵 + "】")) {
 						rank = Const.強敵;
+						channelManager.setFData(channelId, "使用");
 					} else if (event.getMessage().getEmbeds().get(0).getTitle().contains("【" + Const.超強敵 + "】")) {
 						rank = Const.超強敵;
+						channelManager.setFData(channelId, "使用");
 					} else if (event.getMessage().getEmbeds().get(0).getTitle().contains("【" + Const.シリーズ + "】")) {
 						rank = Const.シリーズ;
+						channelManager.setFData(channelId, "使用");
 					} else if (event.getMessage().getEmbeds().get(0).getTitle().contains("【" + Const.レア + "】")) {
 						rank = Const.レア;
+						channelManager.setFData(channelId, "使用");
 					} else if (event.getMessage().getEmbeds().get(0).getTitle().contains("【" + Const.激レア + "】")) {
 						rank = Const.激レア;
+						channelManager.setFData(channelId, "使用");
 					} else if (event.getMessage().getEmbeds().get(0).getTitle().contains("【" + Const.超激レア + "】")) {
 						rank = Const.超激レア;
 						String roleId = Sqlite.getRole(guildId, Const.発言不可);
@@ -102,6 +115,7 @@ public class AmmountEvent extends MessageEvent {
 							eb.setTitle("超激レアが出たよ！");
 							event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 									Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
+							channelManager.setFData(channelId, Const.超激レア出現);
 						}
 						if (Playermanager.isJoin(event.getGuild().getId())
 								&& memberId.equals(Playermanager.getUserId(event.getGuild().getId()))) {
@@ -110,9 +124,6 @@ public class AmmountEvent extends MessageEvent {
 							//BOTの音楽再生時の音量を設定
 							Playermanager.getGuildMusicManager(event.getGuild()).player.setVolume(200);
 						}
-					} else if (Const.tohru_image_list.contains(
-							event.getMessage().getEmbeds().get(0).getImage().getUrl().replaceFirst("\\?.*", ""))) {
-						rank = Const.tohru;
 					}
 				}
 			}
@@ -170,10 +181,17 @@ public class AmmountEvent extends MessageEvent {
 						eb.setTitle("トールが出たよ！");
 						event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
 								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
+						channelManager.setFData(channelId, Const.トール出現);
 					}
 				}
 			}
 		} catch (Exception e) {
+		}
+		
+		if(!rank.isEmpty()) {
+			channelManager.setData(channelId, new Date());
+			channelManager.setCData(channelId, event.getChannel());
+			channelManager.setEData(channelId, event.getMessage().getReferencedMessage().getAuthor().getName());
 		}
 
 		boolean isSkip = false;

@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import taoCalc.CalcManager;
-import taoCalc.ChannelManager;
 import taoCalc.Const;
 import taoCalc.RankManager;
 import taoCalc.RankMessageManager;
@@ -932,10 +931,6 @@ public class MessageEvent extends ListenerAdapter {
 		rmapCalc(event);
 
 		materiaCalc(event);
-
-		ChannelManager channelManager = ChannelManager.getINSTANCE();
-		channelManager.setData(event.getChannel().getId(), new Date());
-		channelManager.setCData(event.getChannel().getId(), event.getChannel());
 
 	}
 
