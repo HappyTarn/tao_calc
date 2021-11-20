@@ -8,8 +8,11 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
+import taoCalc.Const;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.Member;
 import taoCalc.util.Utility;
@@ -141,6 +144,30 @@ public class ShowExpCommand extends Command {
 			}
 			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
 		} else if (event.getArgs().equals("all reset")) {
+			boolean isExec = false;
+			if(event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
+				isExec = true;
+			}else {
+				String roleId = Sqlite.getRole(guildId, Const.経験値変更係);
+				if (roleId.isEmpty()) {
+					for (Role role : event.getMember().getRoles()) {
+						if (role.getName().equals("経験値変更係")) {
+							isExec = true;
+						}
+					}
+				} else {
+					for (Role role : event.getMember().getRoles()) {
+						if (role.getId().equals(roleId)) {
+							isExec = true;
+						}
+					}
+				}
+			}
+			
+			if(!isExec) {
+				event.getMessage().reply("権限ないぞ").queue();
+				return;
+			}
 			List<Member> memberList = Sqlite.selectMemberOrderByExpDesc(guildId);
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 			embedBuilder.setTitle("保有経験値");
