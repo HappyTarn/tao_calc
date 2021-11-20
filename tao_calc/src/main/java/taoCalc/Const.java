@@ -90,5 +90,17 @@ public class Const {
 	public final static String PET_U = "Unknownレア";
 	public final static String PET_MMO = "MMOレア";
 	public final static String PET_TAO = "TAOレア";
+	
+	/**
+	 * エンチャント
+	 */
+	public final static String ENCHANT_N = "Nレア";
+	public final static String ENCHANT_R = "Rレア";
+	public final static String ENCHANT_SR = "SRレア";
+	public final static String ENCHANT_U = "Unknownレア";
+	public final static String ENCHANT_A = "Anijaaaレア";
+	public final static String ENCHANT_T = "Tsukishimaレア";
+	public final static String ENCHANT_MMO = "MMOレア";
+	public final static String ENCHANT_TAO = "TAOレア";
 
 }

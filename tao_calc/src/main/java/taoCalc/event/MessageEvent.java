@@ -13,6 +13,7 @@ import com.github.ygimenez.model.Page;
 
 import google.GoogleSheets;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -92,6 +93,46 @@ public class MessageEvent extends ListenerAdapter {
 	public void onButtonClick(ButtonClickEvent event) {
 
 		event.getMessage().getReferencedMessage();
+		
+		
+		// 経験値リセット
+		if(event.getComponentId().equals("seallreset")) {
+			String guildId = event.getGuild().getId();
+			boolean isExec = false;
+			if(event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
+				isExec = true;
+			}else {
+				String roleId = Sqlite.getRole(guildId, Const.経験値変更係);
+				if (roleId.isEmpty()) {
+					for (Role role : event.getMember().getRoles()) {
+						if (role.getName().equals("経験値変更係")) {
+							isExec = true;
+						}
+					}
+				} else {
+					for (Role role : event.getMember().getRoles()) {
+						if (role.getId().equals(roleId)) {
+							isExec = true;
+						}
+					}
+				}
+			}
+			
+			if(isExec) {
+				
+				Sqlite.executeSqlNotResult(guildId, "update member set exp = '0'");
+				
+				EmbedBuilder embedBuilder = new EmbedBuilder();
+				embedBuilder.setTitle("保有経験値");
+				embedBuilder.clear();
+				embedBuilder.setTitle("保有経験値");
+				embedBuilder.appendDescription(
+						String.format("> %s ： %s \n", 0, "全員の合計"));
+				event.getChannel().sendMessageEmbeds(embedBuilder.build()).queue();
+				event.getMessage().delete().queue();
+			}
+		}
+		
 		//通知ボタン
 		if (event.getComponentId().equals("tcmt")) {
 			for (Button b : event.getMessage().getButtons()) {
@@ -937,6 +978,7 @@ public class MessageEvent extends ListenerAdapter {
 	@Override
 	public void onMessageUpdate(MessageUpdateEvent event) {
 		new PetCount().onMessageUpdate(event);
+		new EnchantCount().onMessageUpdate(event);
 		rankCalc(event);
 	}
 
@@ -959,6 +1001,7 @@ public class MessageEvent extends ListenerAdapter {
 		}
 
 		MessageEmbed embed = event.getMessage().getEmbeds().get(0);
+		String result = event.getMessage().getContentRaw();
 
 		if (embed.getDescription() == null || embed.getDescription().isEmpty()) {
 			return;
@@ -1013,6 +1056,10 @@ public class MessageEvent extends ListenerAdapter {
 		boolean isMateria = false;
 		boolean isBukikon = false;
 		boolean isWeapon = false;
+		boolean isTen = false;
+		if(result.contains("終焉スキル発動！ファイアボール！")) {
+			isTen = true;
+		}
 		for (Field f : embed.getFields()) {
 
 			if (f.getValue().contains("[素材]")) {
@@ -1031,8 +1078,14 @@ public class MessageEvent extends ListenerAdapter {
 		summary.setMemberId(userId);
 		summary.setCombatCount(1D);
 		summary.setExp(Double.parseDouble(exp.replaceAll(",", "")));
-		summary.setGroundCount(1D);
 
+		if(isTen) {
+			summary.setGroundCount(10D);
+			calcInfo.addTen();
+		}else {
+			summary.setGroundCount(1D);
+		}
+		
 		if (isMateria) {
 			summary.setSozaiCount(1D);
 			calcInfo.addMateriaCount();

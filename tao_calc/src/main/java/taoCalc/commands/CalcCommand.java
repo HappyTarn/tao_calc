@@ -51,6 +51,10 @@ public class CalcCommand extends Command {
 			
 			eb.addField("取得経験値", calcInfo.getExpString(), false);
 			
+			eb.addField("通常枠エンチャント", calcInfo.get通常枠(), false);
+			
+			eb.addField("特殊枠エンチャント", calcInfo.get特殊枠(), false);
+			
 			eb.setFooter("このデータはbotの再起動でリセット");
 
 			event.getMessage().replyEmbeds(eb.build()).queue();

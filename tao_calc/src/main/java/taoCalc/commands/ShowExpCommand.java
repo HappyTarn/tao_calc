@@ -8,6 +8,8 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.Member;
 import taoCalc.util.Utility;
@@ -83,7 +85,7 @@ public class ShowExpCommand extends Command {
 			int count = 1;
 			Long sum = 0L;
 			for (Member member : memberList) {
-				if(member.get合計() == 0) {
+				if (member.get合計() == 0) {
 					continue;
 				}
 				if (count % 20 == 0) {
@@ -107,8 +109,7 @@ public class ShowExpCommand extends Command {
 			embedBuilder.appendDescription(
 					String.format("> %s ： %s \n", Utility.convertCommaToStr(sum), "全員の合計"));
 			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
-			
-			
+
 		} else if (event.getArgs().equals("pall")) {
 			List<Member> memberList = Sqlite.selectMemberOrderBySubjugation(guildId);
 			EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -120,7 +121,7 @@ public class ShowExpCommand extends Command {
 				sum = sum + member.get合計();
 			}
 			for (Member member : memberList) {
-				if(member.get合計() == 0) {
+				if (member.get合計() == 0) {
 					continue;
 				}
 				if (count % 20 == 0) {
@@ -134,10 +135,45 @@ public class ShowExpCommand extends Command {
 					embedBuilder.setTitle("討伐数一覧（％）");
 				}
 				embedBuilder.appendDescription(
-						String.format("> %s％  ： <@%s> \n", ((float) member.get合計() / (float) sum * 100), member.getId()));
+						String.format("> %s％  ： <@%s> \n", ((float) member.get合計() / (float) sum * 100),
+								member.getId()));
 				count++;
 			}
 			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
+		} else if (event.getArgs().equals("all reset")) {
+			List<Member> memberList = Sqlite.selectMemberOrderByExpDesc(guildId);
+			EmbedBuilder embedBuilder = new EmbedBuilder();
+			embedBuilder.setTitle("保有経験値");
+
+			int count = 1;
+			Long sum = 0L;
+			for (Member member : memberList) {
+				if (count % 20 == 0) {
+					event.getMessage().replyEmbeds(embedBuilder.build()).queue();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					embedBuilder.clear();
+					embedBuilder.setTitle("保有経験値");
+				}
+				embedBuilder.appendDescription(
+						String.format("> %s ： <@%s> | 最終更新 ： %s \n", member.getFormatExp(), member.getId(),
+								member.getUpdateDate()));
+				sum = sum + member.getExp();
+				count++;
+			}
+			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
+			embedBuilder.clear();
+			embedBuilder.setTitle("保有経験値");
+			embedBuilder.appendDescription(
+					String.format("> %s ： %s \n", Utility.convertCommaToStr(sum), "全員の合計"));
+			event.getMessage().replyEmbeds(embedBuilder.build()).queue();
+			event.getMessage().reply("全員の保有経験値をリセットしますか？")
+					.setActionRow(Button.of(ButtonStyle.SUCCESS, "seallreset", "リセット"),
+							Button.of(ButtonStyle.DANGER, "cancel", "キャンセル"))
+					.queue();
 		} else if (event.getArgs().split(" ").length > 0) {
 			Pattern p = Pattern.compile("([0-9]+)");
 			Matcher m = p.matcher(event.getArgs().split(" ")[0]);
