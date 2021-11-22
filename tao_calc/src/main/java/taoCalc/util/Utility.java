@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import taoCalc.Const;
+import taoCalc.dto.RaidInfo;
 
 public class Utility {
 
@@ -26,7 +28,22 @@ public class Utility {
 		return number.longValue();
 	}
 
+	public static double convertCommmaToDouble(String value) {
+		Number number;
+		try {
+			number = NumberFormat.getInstance().parse(value);
+		} catch (ParseException e) {
+			number = 0;
+		}
+		return number.doubleValue();
+	}
+
 	public static String convertCommaToStr(Long value) {
+		NumberFormat nfNum = NumberFormat.getNumberInstance();
+		return nfNum.format(value);
+	}
+
+	public static String convertCommaToStr(Double value) {
 		NumberFormat nfNum = NumberFormat.getNumberInstance();
 		return nfNum.format(value);
 	}
@@ -98,6 +115,35 @@ public class Utility {
 		return null;
 	}
 
+	public static String raidBossHP(String rank, String hp) {
+
+		double hpd = Utility.convertCommmaToDouble(hp);
+
+		String result = "";
+
+		if (Const.通常.equals(rank)) {
+			result = Utility.convertCommaToStr(hpd * 200000);
+		} else if (Const.弱敵.equals(rank)) {
+			result = Utility.convertCommaToStr(hpd * 100000);
+		} else if (Const.強敵.equals(rank)) {
+			result = Utility.convertCommaToStr(hpd * 400000);
+		} else if (Const.超強敵.equals(rank)) {
+			result = Utility.convertCommaToStr(hpd * 2000000);
+		} else if (Const.シリーズ.equals(rank)) {
+			result = Utility.convertCommaToStr(hpd * 2000000);
+		} else if (Const.レア.equals(rank)) {
+			result = Utility.convertCommaToStr(hpd * 2000000);
+		} else if (Const.激レア.equals(rank)) {
+			result = Utility.convertCommaToStr(hpd * 4000000);
+		} else if (Const.超激レア.equals(rank)) {
+			result = Utility.convertCommaToStr(hpd * 5000000);
+		} else {
+			result = Utility.convertCommaToStr(hpd * 10000000);
+		}
+
+		return result;
+	}
+
 	public static void sendMessage(MessageChannel chan, String message) {
 		chan.sendMessage(message).queue();
 	}
@@ -115,10 +161,11 @@ public class Utility {
 			return null;
 		}
 	}
-	
+
 	public static Date getFirstDate(Date date) {
 
-		if (date==null) return null;
+		if (date == null)
+			return null;
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
@@ -132,21 +179,39 @@ public class Utility {
 
 		return calendar.getTime();
 	}
-	
+
 	public static boolean checkDate(String strDate) {
-	    if (strDate == null || strDate.length() != 10) {
-	        return false;
-	    }else {
-	    	return true;
-	    }
-//	    strDate = strDate.replace('-', '/');
-//	    DateFormat format = DateFormat.getDateInstance();
-//	    format.setLenient(false);
-//	    try {
-//	        format.parse(strDate);
-//	        return true;
-//	    } catch (Exception e) {
-//	        return false;
-//	    }
+		if (strDate == null || strDate.length() != 10) {
+			return false;
+		} else {
+			return true;
+		}
+		//	    strDate = strDate.replace('-', '/');
+		//	    DateFormat format = DateFormat.getDateInstance();
+		//	    format.setLenient(false);
+		//	    try {
+		//	        format.parse(strDate);
+		//	        return true;
+		//	    } catch (Exception e) {
+		//	        return false;
+		//	    }
+	}
+
+	public static EmbedBuilder createRaidBoss(RaidInfo raidInfo) {
+
+		EmbedBuilder eb = new EmbedBuilder();
+		eb.setAuthor("レイドボスNo." + raidInfo.getRaidNo());
+		eb.setTitle("属性:" + raidInfo.getZokusei() + " ランク:【" + raidInfo.getRank() + "】\r\n"
+				+ raidInfo.getName() + "が待ち構えている...！\r\n"
+				+ "Lv.???????\r\n"
+				+ "現HP: " + raidInfo.getHp() + "\r\n"
+				+ "総HP: " + raidInfo.getTotalHp());
+
+		eb.setImage(raidInfo.getURL());
+
+		eb.setFooter(raidInfo.getLimit().isEmpty() ? "終了" : raidInfo.getLimit() + "まで");
+
+		return eb;
+
 	}
 }

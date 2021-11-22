@@ -47,6 +47,7 @@ import taoCalc.commands.MtoCommand;
 import taoCalc.commands.PingCommand;
 import taoCalc.commands.PlayCommand;
 import taoCalc.commands.Private;
+import taoCalc.commands.RaidCommand;
 import taoCalc.commands.Rank;
 import taoCalc.commands.SetExpInfoChannelCommand;
 import taoCalc.commands.SetPrizeInfoChannelCommand;
@@ -134,6 +135,7 @@ public class TaoCalc {
 				new Rank(),
 				new MenuCommand(),
 				new AkiCommand(),
+				new RaidCommand(),
 				new AddExpCommand());
 
 		// start getting a bot account set up

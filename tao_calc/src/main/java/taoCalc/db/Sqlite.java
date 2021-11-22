@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,6 +20,8 @@ import taoCalc.dto.Member;
 import taoCalc.dto.MonsterRate;
 import taoCalc.dto.PetInfo;
 import taoCalc.dto.PrizeMoneyInfo;
+import taoCalc.dto.RaidInfo;
+import taoCalc.dto.RaidMemberInfo;
 import taoCalc.dto.Rate;
 import taoCalc.dto.Summary;
 
@@ -209,7 +213,7 @@ public class Sqlite {
 		}
 	}
 
-	public static List<Summary> selectSummaryOrderByExample(String order,String where) {
+	public static List<Summary> selectSummaryOrderByExample(String order, String where) {
 		Connection connection = null;
 		Statement statement = null;
 		List<Summary> result = new ArrayList<Summary>();
@@ -227,7 +231,7 @@ public class Sqlite {
 					+ "sum(weapon_count) as weapon_count,"
 					+ "sum(bukikon_count) as bukikon_count,"
 					+ "sum(ban_count) as ban_count"
-					+ " from summary "+where+" group by member_id order by " + order + " desc");
+					+ " from summary " + where + " group by member_id order by " + order + " desc");
 			while (rs.next()) {
 				Summary summary = new Summary();
 				summary.setMemberId(rs.getString("member_id"));
@@ -386,6 +390,391 @@ public class Sqlite {
 			}
 		}
 		return result;
+	}
+
+	public static RaidMemberInfo selectRaidMemberInfoById(String guildId, Integer raidNo, String memberId) {
+		Connection connection = null;
+		Statement statement = null;
+		RaidMemberInfo result = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			sdf.format(new Date());
+			ResultSet rs = statement
+					.executeQuery("select * from raid_member_info where raid_no = '" + raidNo
+							+ "' and member_id = '" + memberId + "'");
+			while (rs.next()) {
+				RaidMemberInfo raidMemberInfo = new RaidMemberInfo();
+				raidMemberInfo.setRaidNo(rs.getInt("raid_no"));
+				raidMemberInfo.setMemberId(rs.getString("member_id"));
+				raidMemberInfo.setDamage(rs.getString("damage"));
+
+				result = raidMemberInfo;
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public static List<RaidMemberInfo> selectRaidMembers(String guildId, Integer raidNo) {
+		Connection connection = null;
+		Statement statement = null;
+		List<RaidMemberInfo> result = new ArrayList<RaidMemberInfo>();
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			sdf.format(new Date());
+			ResultSet rs = statement
+					.executeQuery("select * from raid_member_info where raid_no = '" + raidNo
+							+ "' order by damage desc");
+			while (rs.next()) {
+				RaidMemberInfo raidMemberInfo = new RaidMemberInfo();
+				raidMemberInfo.setRaidNo(rs.getInt("raid_no"));
+				raidMemberInfo.setMemberId(rs.getString("member_id"));
+				raidMemberInfo.setDamage(rs.getString("damage"));
+
+				result.add(raidMemberInfo);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public static void insertRaidMemberInfo(String guildId, RaidMemberInfo raidMemberInfo) {
+		Connection connection = null;
+		Statement statement = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			statement.execute(
+					"insert into raid_member_info("
+							+ "raid_no,"
+							+ "member_id,"
+							+ "damage"
+							+ ") values('"
+							+ raidMemberInfo.getRaidNo() + "','"
+							+ raidMemberInfo.getMemberId() + "','"
+							+ raidMemberInfo.getDamage() + "')");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void updateRaidMemberInfo(String guildId, RaidMemberInfo raidMemberInfo) {
+		Connection connection = null;
+		Statement statement = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			statement.execute(
+					"update raid_member_info set "
+							+ "damage = '" + raidMemberInfo.getDamage() + "'"
+							+ " where raid_no = '" + raidMemberInfo.getRaidNo()
+							+ "' and member_id = '" + raidMemberInfo.getMemberId() + "'");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static RaidInfo selectRaidInfoByValid(String guildId) {
+		Connection connection = null;
+		Statement statement = null;
+		RaidInfo result = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			sdf.format(new Date());
+			ResultSet rs = statement
+					.executeQuery("select * from raid_info where limit_date >= datetime('now', '+9 hours')");
+			while (rs.next()) {
+				RaidInfo raidInfo = new RaidInfo();
+				raidInfo.setRaidNo(rs.getInt("raid_no"));
+				raidInfo.setName(rs.getString("name"));
+				raidInfo.setZokusei(rs.getString("zokusei"));
+				raidInfo.setHp(rs.getString("hp"));
+				raidInfo.setTotalHp(rs.getString("total_hp"));
+				raidInfo.setRank(rs.getString("rank"));
+				raidInfo.setURL(rs.getString("url"));
+				raidInfo.setLimit(rs.getString("limit_date"));
+
+				result = raidInfo;
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	public static Integer selectMaxRaidInfo(String guildId) {
+		Connection connection = null;
+		Statement statement = null;
+		Integer result = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			sdf.format(new Date());
+			ResultSet rs = statement
+					.executeQuery("select case when max(raid_no) is null then '1' else max(raid_no) + 1 end as raid_no from raid_info");
+			while (rs.next()) {
+				result = rs.getInt("raid_no");
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public static RaidInfo selectRaidInfoByNo(String guildId, Integer no) {
+		Connection connection = null;
+		Statement statement = null;
+		RaidInfo result = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			sdf.format(new Date());
+			ResultSet rs = statement
+					.executeQuery("select * from raid_info where raid_no = '" + no + "'");
+			while (rs.next()) {
+				RaidInfo raidInfo = new RaidInfo();
+				raidInfo.setRaidNo(rs.getInt("raid_no"));
+				raidInfo.setName(rs.getString("name"));
+				raidInfo.setZokusei(rs.getString("zokusei"));
+				raidInfo.setHp(rs.getString("hp"));
+				raidInfo.setTotalHp(rs.getString("total_hp"));
+				raidInfo.setRank(rs.getString("rank"));
+				raidInfo.setURL(rs.getString("url"));
+				raidInfo.setLimit(rs.getString("limit_date"));
+
+				result = raidInfo;
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public static void insertRaidInfo(String guildId, RaidInfo raidInfo, int hour) {
+		Connection connection = null;
+		Statement statement = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			statement.execute(
+					"insert into raid_info("
+							+ "raid_no,"
+							+ "name,"
+							+ "zokusei,"
+							+ "hp,"
+							+ "total_hp,"
+							+ "rank,"
+							+ "url,"
+							+ "limit_date"
+							+ ") values('"
+							+ raidInfo.getRaidNo() + "','"
+							+ raidInfo.getName() + "','"
+							+ raidInfo.getZokusei() + "','"
+							+ raidInfo.getHp() + "','"
+							+ raidInfo.getTotalHp() + "','"
+							+ raidInfo.getRank() + "','"
+							+ raidInfo.getURL() + "',"
+							+ "datetime('now', '+" + hour + " hours'))");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void updateRaidInfo(String guildId, RaidInfo raidInfo) {
+		Connection connection = null;
+		Statement statement = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+
+			connection = DriverManager.getConnection("jdbc:sqlite:db/" + guildId + ".db");
+			statement = connection.createStatement();
+			statement.execute(
+					"update raid_info set "
+							+ "hp = '" + raidInfo.getHp() + "',"
+							+ "limit_date = '" + raidInfo.getLimit() + "' "
+							+ "where raid_no = '" + raidInfo.getRaidNo() + "'");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static Rate selectRateByRank(String guildId, String rank) {
@@ -633,6 +1022,12 @@ public class Sqlite {
 			statement.execute(sql);
 
 			sql = "create table prize_money_info(name,exp)";
+			statement.execute(sql);
+
+			sql = "create table raid_info(raid_no,name,zokusei,hp,total_hp,rank,url,limit_date)";
+			statement.execute(sql);
+
+			sql = "create table raid_member_info(raid_no,member_id,damage)";
 			statement.execute(sql);
 
 		} catch (ClassNotFoundException e) {

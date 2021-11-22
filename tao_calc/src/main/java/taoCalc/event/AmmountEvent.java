@@ -28,6 +28,8 @@ import taoCalc.dto.CalcInfo;
 import taoCalc.dto.Member;
 import taoCalc.dto.MonsterRate;
 import taoCalc.dto.PrizeMoneyInfo;
+import taoCalc.dto.RaidInfo;
+import taoCalc.dto.RaidMemberInfo;
 import taoCalc.dto.Rate;
 import taoCalc.dto.Summary;
 import taoCalc.util.Utility;
@@ -134,11 +136,12 @@ public class AmmountEvent extends MessageEvent {
 		//攻撃力処理
 		Pattern atk = Pattern.compile("に(\\d+)のダメージ");
 		Pattern criticalatk = Pattern.compile(".*会心の一撃.*に(\\d+)のダメージ");
+		String dm = "";
 		try {
 			Matcher atkm = atk.matcher(event.getMessage().getContentRaw().replaceAll(",", ""));
 			Matcher criticalatkm = criticalatk.matcher(event.getMessage().getContentRaw().replaceAll(",", ""));
 			if (criticalatkm.find()) {
-				String dm = criticalatkm.group(1);
+				dm = criticalatkm.group(1);
 				if (calcInfo == null) {
 					calcInfo = new CalcInfo();
 				}
@@ -146,7 +149,7 @@ public class AmmountEvent extends MessageEvent {
 				Calcmanager.setData(memberId, calcInfo);
 			}else {
 				if (atkm.find()) {
-					String dm = atkm.group(1);
+					dm = atkm.group(1);
 					if (calcInfo == null) {
 						calcInfo = new CalcInfo();
 					}
@@ -186,6 +189,35 @@ public class AmmountEvent extends MessageEvent {
 				}
 			}
 		} catch (Exception e) {
+		}
+		
+		if (Sqlite.countSqliteMasterByTableName(guildId, "raid_info") != 0 && !dm.isEmpty()) {
+			RaidInfo raidInfo = Sqlite.selectRaidInfoByValid(guildId);
+			if(raidInfo != null) {
+				if(raidInfo.getName().equals(monsterName)) {
+					double hp = Double.parseDouble(raidInfo.getHp().replace(",", ""));
+					if(hp > 0) {
+						hp = hp - Double.parseDouble(dm);
+						if(hp <= 0) {
+							hp = 0;
+							raidInfo.setLimit("");
+						}
+						raidInfo.setHp(Utility.convertCommaToStr(hp));
+						Sqlite.updateRaidInfo(guildId, raidInfo);
+						RaidMemberInfo raidMemberInfo = Sqlite.selectRaidMemberInfoById(guildId, raidInfo.getRaidNo(), memberId);
+						if(raidMemberInfo == null) {
+							raidMemberInfo = new RaidMemberInfo();
+							raidMemberInfo.setMemberId(memberId);
+							raidMemberInfo.setRaidNo(raidInfo.getRaidNo());
+							raidMemberInfo.setDamage(String.valueOf(Double.parseDouble(dm)));
+							Sqlite.insertRaidMemberInfo(guildId, raidMemberInfo);
+						}else {
+							raidMemberInfo.setDamage(String.valueOf(Double.parseDouble(raidMemberInfo.getDamage()) + Double.parseDouble(dm)));
+							Sqlite.updateRaidMemberInfo(guildId, raidMemberInfo);
+						}
+					}
+				}
+			}
 		}
 		
 		if(!rank.isEmpty()) {

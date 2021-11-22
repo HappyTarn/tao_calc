@@ -32,12 +32,14 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import taoCalc.CalcManager;
 import taoCalc.Const;
+import taoCalc.RaidManager;
 import taoCalc.RankManager;
 import taoCalc.RankMessageManager;
 import taoCalc.db.Sqlite;
 import taoCalc.dto.CalcInfo;
 import taoCalc.dto.Member;
 import taoCalc.dto.PetInfo;
+import taoCalc.dto.RaidInfo;
 import taoCalc.dto.Summary;
 import taoCalc.util.Utility;
 
@@ -86,22 +88,73 @@ public class MessageEvent extends ListenerAdapter {
 					;
 				}
 			}
+		}
 
+		if (componentId.equals("menu:raid")) {
+			String guildId = event.getGuild().getId();
+			boolean isExec = false;
+			if (event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
+				isExec = true;
+			} else {
+				String roleId = Sqlite.getRole(guildId, Const.経験値管理係);
+				if (roleId.isEmpty()) {
+					for (Role role : event.getMember().getRoles()) {
+						if (role.getName().equals("経験値管理係")) {
+							isExec = true;
+						}
+					}
+				} else {
+					for (Role role : event.getMember().getRoles()) {
+						if (role.getId().equals(roleId)) {
+							isExec = true;
+						}
+					}
+				}
+			}
+
+			if (event.getMember().getId().equals("300984197634588672")) {
+				isExec = true;
+			}
+
+			if (!isExec) {
+				return;
+			}
+
+			event.editMessage(event.getSelectedOptions().get(0).getLabel()).queue();
+			event.editSelectionMenu(null).queue();
+
+			String selectedValue = event.getSelectedOptions().get(0).getValue();
+			selectedValue = selectedValue.replace("hour", "");
+
+			RaidManager raidManager = RaidManager.getINSTANCE();
+			RaidInfo raidInfo = raidManager.getDate(guildId);
+			Integer no = Sqlite.selectMaxRaidInfo(guildId);
+			raidInfo.setRaidNo(no);
+			Sqlite.insertRaidInfo(guildId, raidManager.getDate(guildId), Integer.parseInt(selectedValue) + 9);
+
+			Sqlite.executeSqlNotResult(guildId,
+					"update raid_info set limit_date = '' where raid_no <> '" + raidInfo.getRaidNo() + "'");
+
+			raidInfo = Sqlite.selectRaidInfoByNo(guildId, no);
+
+			EmbedBuilder eb = Utility.createRaidBoss(raidInfo);
+			event.getMessage().replyEmbeds(eb.build()).queue();
+
+			raidManager.setData(guildId, null);
 		}
 	}
 
 	public void onButtonClick(ButtonClickEvent event) {
 
 		event.getMessage().getReferencedMessage();
-		
-		
+
 		// 経験値リセット
-		if(event.getComponentId().equals("seallreset")) {
+		if (event.getComponentId().equals("seallreset")) {
 			String guildId = event.getGuild().getId();
 			boolean isExec = false;
-			if(event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
+			if (event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
 				isExec = true;
-			}else {
+			} else {
 				String roleId = Sqlite.getRole(guildId, Const.経験値変更係);
 				if (roleId.isEmpty()) {
 					for (Role role : event.getMember().getRoles()) {
@@ -117,11 +170,11 @@ public class MessageEvent extends ListenerAdapter {
 					}
 				}
 			}
-			
-			if(isExec) {
-				
+
+			if (isExec) {
+
 				Sqlite.executeSqlNotResult(guildId, "update member set exp = '0'");
-				
+
 				EmbedBuilder embedBuilder = new EmbedBuilder();
 				embedBuilder.setTitle("保有経験値");
 				embedBuilder.clear();
@@ -132,7 +185,7 @@ public class MessageEvent extends ListenerAdapter {
 				event.getMessage().delete().queue();
 			}
 		}
-		
+
 		//通知ボタン
 		if (event.getComponentId().equals("tcmt")) {
 			for (Button b : event.getMessage().getButtons()) {
@@ -968,6 +1021,7 @@ public class MessageEvent extends ListenerAdapter {
 		new AmmountEvent().onMessageReceived(event);
 		new TrainingEvent().onMessageReceived(event);
 		new PrizeMoneyEvent().onMessageReceived(event);
+		new RaidEvent().onMessageReceived(event);
 		new PetCount().onMessageReceived(event);
 		rmapCalc(event);
 
@@ -1057,7 +1111,7 @@ public class MessageEvent extends ListenerAdapter {
 		boolean isBukikon = false;
 		boolean isWeapon = false;
 		boolean isTen = false;
-		if(result.contains("終焉スキル発動！ファイアボール！")) {
+		if (result.contains("終焉スキル発動！ファイアボール！")) {
 			isTen = true;
 		}
 		for (Field f : embed.getFields()) {
@@ -1079,13 +1133,13 @@ public class MessageEvent extends ListenerAdapter {
 		summary.setCombatCount(1D);
 		summary.setExp(Double.parseDouble(exp.replaceAll(",", "")));
 
-		if(isTen) {
+		if (isTen) {
 			summary.setGroundCount(10D);
 			calcInfo.addTen();
-		}else {
+		} else {
 			summary.setGroundCount(1D);
 		}
-		
+
 		if (isMateria) {
 			summary.setSozaiCount(1D);
 			calcInfo.addMateriaCount();
