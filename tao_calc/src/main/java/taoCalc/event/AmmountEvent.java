@@ -1,5 +1,6 @@
 package taoCalc.event;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +45,7 @@ public class AmmountEvent extends MessageEvent {
 			return;
 		}
 
-		if(event.getMessage().getReferencedMessage() == null) {
+		if (event.getMessage().getReferencedMessage() == null) {
 			return;
 		}
 		if (event.getMessage().getReferencedMessage().getContentRaw().startsWith(NG_REPLY)) {
@@ -53,12 +54,12 @@ public class AmmountEvent extends MessageEvent {
 
 		Boolean isWrite = PermissionUtil.checkPermission(
 				event.getGuild().getTextChannelById(event.getChannel().getId()), event.getGuild().getSelfMember(),
-				Permission.MESSAGE_WRITE,Permission.MESSAGE_EMBED_LINKS);
+				Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS);
 		String guildId = event.getGuild().getId();
 		String memberId = event.getMessage().getReferencedMessage().getAuthor().getId();
 		ChannelManager channelManager = ChannelManager.getINSTANCE();
 		String channelId = event.getChannel().getId();
-		
+
 		// お試し
 		if (event.getMessage().getReferencedMessage().getContentRaw().toLowerCase().startsWith("::atk")) {
 			if (event.getMessage().getEmbeds().isEmpty()) {
@@ -69,8 +70,13 @@ public class AmmountEvent extends MessageEvent {
 						event.getGuild().addRoleToMember(memberId, role).queue();
 						EmbedBuilder eb = new EmbedBuilder();
 						eb.setTitle("超激レアが出たよ！");
-						event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
+						event.getMessage().replyEmbeds(eb.build())
+								.setActionRow(
+										Button.of(ButtonStyle.SUCCESS, "removeRole", "発言不可解除",
+												Emoji.fromUnicode("U+1F91E")),
+										Button.of(ButtonStyle.PRIMARY, "tcmt", "通知"),
+										Button.of(ButtonStyle.DANGER, "tcmt_no", "通知しない"))
+								.queue();
 						channelManager.setFData(channelId, Const.超激レア出現);
 					}
 				}
@@ -115,8 +121,13 @@ public class AmmountEvent extends MessageEvent {
 							event.getGuild().addRoleToMember(memberId, role).queue();
 							EmbedBuilder eb = new EmbedBuilder();
 							eb.setTitle("超激レアが出たよ！");
-							event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-									Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
+							event.getMessage().replyEmbeds(eb.build())
+									.setActionRow(
+											Button.of(ButtonStyle.SUCCESS, "removeRole", "発言不可解除",
+													Emoji.fromUnicode("U+1F91E")),
+											Button.of(ButtonStyle.PRIMARY, "tcmt", "通知"),
+											Button.of(ButtonStyle.DANGER, "tcmt_no", "通知しない"))
+									.queue();
 							channelManager.setFData(channelId, Const.超激レア出現);
 						}
 						if (Playermanager.isJoin(event.getGuild().getId())
@@ -134,22 +145,22 @@ public class AmmountEvent extends MessageEvent {
 		CalcInfo calcInfo = Calcmanager.getUserId(memberId);
 
 		//攻撃力処理
-		Pattern atk = Pattern.compile("に(\\d+)のダメージ");
-		Pattern criticalatk = Pattern.compile(".*会心の一撃.*に(\\d+)のダメージ");
+		Pattern atk = Pattern.compile("(.*)に(\\d+)のダメージ");
+		Pattern criticalatk = Pattern.compile(".*会心の一撃！(.*)に(\\d+)のダメージ");
 		String dm = "";
 		try {
 			Matcher atkm = atk.matcher(event.getMessage().getContentRaw().replaceAll(",", ""));
 			Matcher criticalatkm = criticalatk.matcher(event.getMessage().getContentRaw().replaceAll(",", ""));
 			if (criticalatkm.find()) {
-				dm = criticalatkm.group(1);
+				dm = criticalatkm.group(2);
 				if (calcInfo == null) {
 					calcInfo = new CalcInfo();
 				}
 				calcInfo.addCritical(Double.parseDouble(dm));
 				Calcmanager.setData(memberId, calcInfo);
-			}else {
+			} else {
 				if (atkm.find()) {
-					dm = atkm.group(1);
+					dm = atkm.group(2);
 					if (calcInfo == null) {
 						calcInfo = new CalcInfo();
 					}
@@ -157,7 +168,38 @@ public class AmmountEvent extends MessageEvent {
 					Calcmanager.setData(memberId, calcInfo);
 				}
 			}
-		} catch (Exception e) {
+			if (Sqlite.countSqliteMasterByTableName(guildId, "raid_info") != 0 && !dm.isEmpty()) {
+				RaidInfo raidInfo = Sqlite.selectRaidInfoByValid(guildId);
+				if (raidInfo != null) {
+					if (event.getMessage().getContentRaw().contains(raidInfo.getName())) {
+						double hp = Double.parseDouble(raidInfo.getHp().replace(",", ""));
+						if (hp > 0) {
+							hp = hp - Double.parseDouble(dm);
+							if (hp <= 0) {
+								hp = 0;
+								raidInfo.setLimit("");
+							}
+							raidInfo.setHp(Utility.convertCommaToStr(hp));
+							Sqlite.updateRaidInfo(guildId, raidInfo);
+							RaidMemberInfo raidMemberInfo = Sqlite.selectRaidMemberInfoById(guildId,
+									raidInfo.getRaidNo(), memberId);
+							if (raidMemberInfo == null) {
+								raidMemberInfo = new RaidMemberInfo();
+								raidMemberInfo.setMemberId(memberId);
+								raidMemberInfo.setRaidNo(raidInfo.getRaidNo());
+								raidMemberInfo.setDamage(String.valueOf(Double.parseDouble(dm)));
+								Sqlite.insertRaidMemberInfo(guildId, raidMemberInfo);
+							} else {
+								raidMemberInfo.setDamage(BigDecimal.valueOf(Double.parseDouble(raidMemberInfo.getDamage()) + Double.parseDouble(dm)).toPlainString());
+								Sqlite.updateRaidMemberInfo(guildId, raidMemberInfo);
+							}
+						}
+					}
+				}
+			}
+		} catch (
+
+		Exception e) {
 
 		}
 
@@ -182,45 +224,21 @@ public class AmmountEvent extends MessageEvent {
 						event.getGuild().addRoleToMember(memberId, role).queue();
 						EmbedBuilder eb = new EmbedBuilder();
 						eb.setTitle("トールが出たよ！");
-						event.getMessage().replyEmbeds(eb.build()).setActionRow(Button.of(ButtonStyle.SUCCESS,"removeRole", "発言不可解除",Emoji.fromUnicode("U+1F91E")),
-								Button.of(ButtonStyle.PRIMARY,"tcmt", "通知"),Button.of(ButtonStyle.DANGER,"tcmt_no", "通知しない")).queue();
+						event.getMessage().replyEmbeds(eb.build())
+								.setActionRow(
+										Button.of(ButtonStyle.SUCCESS, "removeRole", "発言不可解除",
+												Emoji.fromUnicode("U+1F91E")),
+										Button.of(ButtonStyle.PRIMARY, "tcmt", "通知"),
+										Button.of(ButtonStyle.DANGER, "tcmt_no", "通知しない"))
+								.queue();
 						channelManager.setFData(channelId, Const.トール出現);
 					}
 				}
 			}
 		} catch (Exception e) {
 		}
-		
-		if (Sqlite.countSqliteMasterByTableName(guildId, "raid_info") != 0 && !dm.isEmpty()) {
-			RaidInfo raidInfo = Sqlite.selectRaidInfoByValid(guildId);
-			if(raidInfo != null) {
-				if(raidInfo.getName().equals(monsterName)) {
-					double hp = Double.parseDouble(raidInfo.getHp().replace(",", ""));
-					if(hp > 0) {
-						hp = hp - Double.parseDouble(dm);
-						if(hp <= 0) {
-							hp = 0;
-							raidInfo.setLimit("");
-						}
-						raidInfo.setHp(Utility.convertCommaToStr(hp));
-						Sqlite.updateRaidInfo(guildId, raidInfo);
-						RaidMemberInfo raidMemberInfo = Sqlite.selectRaidMemberInfoById(guildId, raidInfo.getRaidNo(), memberId);
-						if(raidMemberInfo == null) {
-							raidMemberInfo = new RaidMemberInfo();
-							raidMemberInfo.setMemberId(memberId);
-							raidMemberInfo.setRaidNo(raidInfo.getRaidNo());
-							raidMemberInfo.setDamage(String.valueOf(Double.parseDouble(dm)));
-							Sqlite.insertRaidMemberInfo(guildId, raidMemberInfo);
-						}else {
-							raidMemberInfo.setDamage(String.valueOf(Double.parseDouble(raidMemberInfo.getDamage()) + Double.parseDouble(dm)));
-							Sqlite.updateRaidMemberInfo(guildId, raidMemberInfo);
-						}
-					}
-				}
-			}
-		}
-		
-		if(!rank.isEmpty()) {
+
+		if (!rank.isEmpty()) {
 			channelManager.setData(channelId, new Date());
 			channelManager.setCData(channelId, event.getChannel());
 			channelManager.setEData(channelId, event.getMessage().getReferencedMessage().getAuthor().getName());

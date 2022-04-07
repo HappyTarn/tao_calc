@@ -6,6 +6,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.api.Permission;
+import taoCalc.Const;
 
 /**
  *
@@ -26,8 +27,10 @@ public class Private extends Command {
 		
 		EnumSet<Permission> memberPermissions = event.getMember().getPermissions(event.getGuild().getGuildChannelById(event.getChannel().getId()));
 		if(!memberPermissions.contains(Permission.ADMINISTRATOR)) {
-			event.getMessage().reply("権限がありません。").queue();
-			return;
+			if(!event.getMember().getId().equals(Const.ハピタン)) {
+				event.getMessage().reply("権限がありません。").queue();
+				return;
+			}
 		}
 		
 		if("on".equals(event.getArgs())) {

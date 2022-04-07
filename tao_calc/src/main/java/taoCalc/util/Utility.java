@@ -1,9 +1,17 @@
 package taoCalc.util;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -213,5 +221,29 @@ public class Utility {
 
 		return eb;
 
+	}
+
+	public static File createItemFile(String memberId, LinkedHashMap<String, List<String>> data) {
+
+		File file = null;
+		try {
+			file = new File("tmp/" + memberId + ".txt");
+			PrintWriter pw = new PrintWriter(new BufferedWriter
+	                (new OutputStreamWriter(new FileOutputStream(file),"Shift-JIS")));
+			
+			for(List<String> list : data.values()) {
+				for(String value : list) {
+					pw.println(value);
+				}
+			}
+			
+			pw.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			file = null;
+		}
+
+		return file;
 	}
 }

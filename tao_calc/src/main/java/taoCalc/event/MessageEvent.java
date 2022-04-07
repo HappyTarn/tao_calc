@@ -1,9 +1,11 @@
 package taoCalc.event;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +34,7 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import taoCalc.CalcManager;
 import taoCalc.Const;
+import taoCalc.ItemManager;
 import taoCalc.RaidManager;
 import taoCalc.RankManager;
 import taoCalc.RankMessageManager;
@@ -147,6 +150,29 @@ public class MessageEvent extends ListenerAdapter {
 	public void onButtonClick(ButtonClickEvent event) {
 
 		event.getMessage().getReferencedMessage();
+
+		// アイテム表示
+		if (event.getComponentId().startsWith("item")) {
+			String memberId = event.getComponentId().replace("item", "");
+			ItemManager itemManager = ItemManager.getINSTANCE();
+			LinkedHashMap<String, List<String>> data = itemManager.getData(memberId);
+			if(data == null) {
+				event.getChannel().sendMessage("データがないよ").queue();
+				
+			}else {
+				File file = Utility.createItemFile(memberId,data);
+				if(file == null) {
+					event.getChannel().sendMessage("ファイルの作成に失敗しました。").queue();
+				}else {
+					
+					event.getChannel().sendFile(file, memberId + ".txt").queue();
+					
+					file.delete();
+					itemManager.setData(memberId, null);
+				}
+			}
+			event.getMessage().delete().queue();
+		}
 
 		// 経験値リセット
 		if (event.getComponentId().equals("seallreset")) {
@@ -296,7 +322,9 @@ public class MessageEvent extends ListenerAdapter {
 			event.editMessage(event.getMessage()).setActionRows().queue();
 		}
 
-		rankButtonEvent(event);
+		if(event.getComponentId().startsWith("rank")) {
+			rankButtonEvent(event);
+		}
 	}
 
 	private void rankButtonEvent(ButtonClickEvent event) {
@@ -397,12 +425,15 @@ public class MessageEvent extends ListenerAdapter {
 					count++;
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
-				String url = GoogleSheets.create(list, event);
+//				String url = GoogleSheets.create(list, event);
 				pages.add(new Page(eb.build()));
-				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent())
-						.setActionRow(Button.link(url, "スプレッドシート")).queue(success -> {
-							Pages.paginate(success, pages);
-						});
+				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent()).queue(success -> {
+					Pages.paginate(success, pages);
+				});
+//				event.getChannel().sendMessageEmbeds((MessageEmbed) pages.get(0).getContent())
+//						.setActionRow(Button.link(url, "スプレッドシート")).queue(success -> {
+//							Pages.paginate(success, pages);
+//						});
 
 			} else if (command.endsWith("ground")) {
 				if (command.startsWith("d")) {
@@ -480,7 +511,7 @@ public class MessageEvent extends ListenerAdapter {
 						eb.setAuthor(rankingName + "\n");
 					}
 
-					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + " exp体**\n");
+					eb.appendDescription(count + "位 `" + name + "` **" + nfNum.format(s.getExp()) + " exp**\n");
 					count++;
 				}
 				eb.setFooter((list.size() / 10 + 1) + "ページ/" + (list.size() / 10 + 1) + "ページ目を表示中");
@@ -1034,6 +1065,7 @@ public class MessageEvent extends ListenerAdapter {
 		new PetCount().onMessageUpdate(event);
 		new EnchantCount().onMessageUpdate(event);
 		rankCalc(event);
+		itemCalc(event);
 	}
 
 	@Override
@@ -1266,5 +1298,62 @@ public class MessageEvent extends ListenerAdapter {
 					.queue();
 		}
 
+	}
+
+	/**
+	 * アイテム一覧
+	 * @param event
+	 */
+	public void itemCalc(MessageUpdateEvent event) {
+
+		if (!event.getAuthor().getId().equals(Const.TAO_ID)) {
+			return;
+		}
+
+		if (event.getMessage().getReferencedMessage() == null) {
+			return;
+		}
+
+		if (!event.getMessage().getReferencedMessage().getContentRaw().equals("::i")) {
+			return;
+		}
+
+		if (event.getMessage().getEmbeds() != null && event.getMessage().getEmbeds().isEmpty()) {
+			return;
+		}
+
+		String memberId = event.getMessage().getReferencedMessage().getMember().getId();
+		ItemManager itemManager = ItemManager.getINSTANCE();
+		LinkedHashMap<String, List<String>> data = itemManager.getData(memberId);
+
+		if (event.getMessage().getContentRaw().contains("処理を終了させました")) {
+			if (data != null) {
+				RankMessageManager rankMessageManager = RankMessageManager.getINSTANCE();
+				rankMessageManager.setRankMessage(event.getMessage());
+				event.getMessage().reply("itemリストを見たページ分全部出力しますか？")
+						.setActionRow(Button.of(ButtonStyle.PRIMARY, "item" + memberId, "出力"),
+								Button.of(ButtonStyle.DANGER, "cancel", "キャンセル"))
+						.queue();
+			}
+		} else if (event.getMessage().getContentRaw().contains("見たいページを発言してください。")) {
+
+			if (data == null) {
+				data = new LinkedHashMap<String, List<String>>();
+			}
+
+			MessageEmbed embeds = event.getMessage().getEmbeds().get(0);
+			String page = embeds.getFooter().getText().substring(0, embeds.getFooter().getText().indexOf("ページ"));
+
+			if (data.get(page) == null) {
+				List<String> list = new ArrayList<String>();
+				for (Field field : embeds.getFields()) {
+					list.add(field.getName());
+					list.add(field.getValue().replaceAll(">>> ", "").replaceAll("\\*\\*`", "").replaceAll("`", "").replaceAll("\\*\\*", "\t"));
+				}
+				data.put(page, list);
+				itemManager.setData(memberId, data);
+			}
+
+		}
 	}
 }

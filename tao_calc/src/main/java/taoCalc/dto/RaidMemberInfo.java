@@ -8,6 +8,8 @@ public class RaidMemberInfo {
 
 	private String damage = "";
 
+	private Double damageD = 0D;
+
 	public Integer getRaidNo() {
 		return raidNo;
 	}
@@ -30,7 +32,11 @@ public class RaidMemberInfo {
 
 	public void setDamage(String damage) {
 		this.damage = damage;
+		this.damageD = Double.parseDouble(damage);
 	}
 
+	public Double getDamageD() {
+		return damageD;
+	}
 
 }

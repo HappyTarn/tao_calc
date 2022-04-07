@@ -1,6 +1,7 @@
 package taoCalc.commands;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,9 +40,11 @@ public class RaidCommand extends Command {
 		if (event.getArgs().isEmpty()) {
 			raidInfo = Sqlite.selectRaidInfoByValid(guildId);
 			if (raidInfo == null) {
-				event.getMessage().reply("表示するデータがありません。").queue();
-				return;
+				event.getMessage().reply("出現中のレイドボスはいません！").queue();
 			}
+			int i = Sqlite.selectMaxRaidInfo(guildId);
+			raidInfo = Sqlite.selectRaidInfoByNo(guildId, i - 1);
+			event.getMessage().reply("直近のレイドボス情報を表示します。").queue();
 		} else {
 			Pattern p = Pattern.compile("([0-9]+)");
 			Matcher m = p.matcher(event.getArgs().split(" ")[0]);
@@ -67,6 +70,9 @@ public class RaidCommand extends Command {
 		eb.setAuthor("レイドボスNo." + raidInfo.getRaidNo() + " ランキング");
 		ArrayList<Page> pages = new ArrayList<>();
 		int count = 1;
+		
+		list.sort(Comparator.comparing(RaidMemberInfo::getDamageD).reversed());
+		
 		for (RaidMemberInfo s : list) {
 			String name = "(" + s.getMemberId() + ")確認中...";
 			User m = event.getJDA().getUserById(s.getMemberId());

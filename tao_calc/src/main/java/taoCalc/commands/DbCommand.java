@@ -37,8 +37,8 @@ public class DbCommand extends Command {
 				}
 				sb.append("\n");
 			}
-			event.getMessage().reply(sb.toString()).queue();
-			;
+			long endTime = System.currentTimeMillis();
+			event.getMessage().reply("処理時間：" + (endTime - startTime) + " ms\n" + sb.toString()).queue();
 		} else if (args.length == 1) {
 			ArrayList<ArrayList<String>> dataList = new ArrayList<ArrayList<String>>();
 			if (args[0].startsWith("select")) {
@@ -55,7 +55,6 @@ public class DbCommand extends Command {
 			}
 			long endTime = System.currentTimeMillis();
 			event.getMessage().reply("処理時間：" + (endTime - startTime) + " ms\n" + sb.toString()).queue();
-			;
 		}
 	}
 
